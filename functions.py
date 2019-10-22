@@ -1,5 +1,49 @@
 import numpy as np
 from numpy import linalg as la
+import math
+import copy
+
+#def generate_normal_shape(num_of_edges, edge_length, plane_size):
+#    shape_list = []
+#    if num_of_edges == 4:
+#        shape = [1, np.array([(0,0),(0,edge_length),(edge_length,edge_length),(edge_length,0)])]
+#        shape_list.append(shape)
+#        col = int(math.floor(plane_size/edge_length))
+#        firstOfRow = shape[:];
+#        for i in range(col):
+#            new_shape = firstOfRow.copy();
+#            new_shape[0] += i*col;
+#            for k in range(num_of_edges):
+#               new_shape[1][k] += (0, i*edge_length);
+#            print("firstOfRow");
+#            print(firstOfRow);
+#            print("new_shape");
+#            print(new_shape);
+#            for j in range(col):
+#               new_shape[0] += 1;
+#               for k in range(num_of_edges):
+#                  new_shape[1][k] = new_shape[1][k] + (edge_length, 0);
+#               #add_new = new_shape[:]
+#               add_new = new_shape.copy();
+#               print(add_new);
+#               shape_list.append(add_new.copy())
+#               #shape = add_new[:]
+#    return shape_list
+
+def makeSquare(xCord, yCord, edge_length):
+   return np.array([(xCord,yCord),(xCord, yCord + edge_length),(xCord + edge_length, yCord + edge_length),(xCord + edge_length, yCord)]);
+
+
+def generate_normal_shape(num_of_edges, edge_length, plane_size):
+    shape_list = []
+    if num_of_edges == 4:
+        #shape = [1, np.array([(0,0),(0,edge_length),(edge_length,edge_length),(edge_length,0)])]
+        col = int(math.ceil(plane_size/edge_length))
+        for i in range(col):
+            for j in range(col):
+               npArray = makeSquare(i*edge_length, j*edge_length, edge_length);
+               shape_list.append([i*col + j, npArray.copy()])
+    return shape_list
 
 def polyToGraph(polygons):
 #   print("polygon id and verts");
@@ -34,7 +78,7 @@ def polyToGraph(polygons):
          for j in range(len(polygons[i][1])):
             # iterate over vertices
             for l in range(len(polygons[k][1])):
-               dist = la.norm(polygons[i][1][j] - polygons[k][1][l], 2) * 0.4;
+               dist = la.norm(polygons[i][1][j] - polygons[k][1][l], 2);
                print(i, j, k, l);
                print(polygons[i][1][j]);
                print(dist);
@@ -74,16 +118,17 @@ def printCNF(graph, k):
          file.write("-%d -%d 0\n" % (vert1 * k + j, vert2 * k + j));
                
 
-
-vertList = [];
+vertList = generate_normal_shape(4, 0.51, 2)
+#vertList = [];
 # list of 4 squares
-vertList.append([1, np.array([(0.0, 0.0), (0.0, 1.0), (1.0, 1.0), (1.0, 0.0)])]);
-vertList.append([2, np.array([(0.0, 1.0), (0.0, 2.0), (1.0, 2.0), (1.0, 1.0)])]);
-vertList.append([3, np.array([(1.0, 0.0), (1.0, 1.0), (2.0, 1.0), (2.0, 0.0)])]);
-vertList.append([4, np.array([(1.0, 1.0), (1.0, 2.0), (2.0, 2.0), (2.0, 1.0)])]);
-
+#vertList.append([1, np.array([(0.0, 0.0), (0.0, 1.0), (1.0, 1.0), (1.0, 0.0)])]);
+#vertList.append([2, np.array([(0.0, 1.0), (0.0, 2.0), (1.0, 2.0), (1.0, 1.0)])]);
+#vertList.append([3, np.array([(1.0, 0.0), (1.0, 1.0), (2.0, 1.0), (2.0, 0.0)])]);
+#vertList.append([4, np.array([(1.0, 1.0), (1.0, 2.0), (2.0, 2.0), (2.0, 1.0)])]);
+print("vertList");
 print(vertList);
 graph = polyToGraph(vertList);
+print("graph")
 print(graph);
 printCNF(graph, 6);
 
