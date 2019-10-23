@@ -2,6 +2,7 @@ import numpy as np
 from numpy import linalg as la
 import math
 import copy
+from graphics import *
 
 #def generate_normal_shape(num_of_edges, edge_length, plane_size):
 #    shape_list = []
@@ -42,7 +43,7 @@ def generate_normal_shape(num_of_edges, edge_length, plane_size):
         for i in range(col):
             for j in range(col):
                npArray = makeSquare(i*edge_length, j*edge_length, edge_length);
-               shape_list.append([i*col + j, npArray.copy()])
+               shape_list.append([i*col + j + 1, npArray.copy()])
     return shape_list
 
 def polyToGraph(polygons):
@@ -79,9 +80,9 @@ def polyToGraph(polygons):
             # iterate over vertices
             for l in range(len(polygons[k][1])):
                dist = la.norm(polygons[i][1][j] - polygons[k][1][l], 2);
-               print(i, j, k, l);
-               print(polygons[i][1][j]);
-               print(dist);
+               #print(i, j, k, l);
+               #print(polygons[i][1][j]);
+               #print(dist);
                if (dist < 1.0):
                   hasLess = 1;
                elif (dist > 1.0):
@@ -101,9 +102,10 @@ def printCNF(graph, k):
    file = open("tile.cnf","w+")
    n = max(graph);
    n = max(n);
-   n += 1;
+   #n += 1;
    m = len(graph);
    file.write("p cnf %d %d\n" % (n*k, n + m*k));
+   print("n");
    print(n);
    for i in range(n):
       mustHaveColorString = "";
@@ -116,9 +118,72 @@ def printCNF(graph, k):
          vert1 = graph[i][0] - 1;
          vert2 = graph[i][1] - 1;
          file.write("-%d -%d 0\n" % (vert1 * k + j, vert2 * k + j));
-               
 
-vertList = generate_normal_shape(4, 0.51, 2)
+def readAssignemnt(satFile):
+   with open(satFile) as file:
+      #w, h = [int(x) for x in next(f).split()] # read first line
+      assignment = []
+      for line in file: # read rest of lines
+         #assignment.append([int(x) for x in line.split()])
+         for x in line.split():
+            assignment.append(int(x));
+   return assignment;
+
+def displayPlane(vertList, k, assignment, gridSize):
+   win = GraphWin("test", 400, 400);
+   n = len(vertList);
+   scaling = 400/gridSize;
+   for i in range(n):
+      # find color #
+      colorNum = 0;
+      counter = 0;
+      for j in range(i*6, (i+1)*6):
+         counter += 1;
+         print("assignemnt[j]");
+         print(assignment[j]);
+         if (assignment[j] > 0):
+            colorNum = counter;
+      # make rectangle with opposite corners
+      print("points");
+#      print(vertList[i][1][0]);
+#      print(vertList[i][1][2]);
+#      print(tuple(vertList[i][1][2]));
+#      #print(Point(tuple(vertList[i][1][2])));
+#      print(Point(vertList[i][1][0][0], vertList[i][1][2][1]));
+      pt1 = Point(vertList[i][1][0][0] * scaling, vertList[i][1][0][1] * scaling);
+      pt2 = Point(vertList[i][1][2][0] * scaling, vertList[i][1][2][1] * scaling);
+      print(pt1);
+      print(pt2);
+      print(colorNum);
+      rect = Rectangle(pt1, pt2);
+      # set color from number
+      if (colorNum == 1):
+         rect.setOutline('red');
+         rect.setFill('red');
+      elif (colorNum == 2):
+         rect.setOutline('blue');
+         rect.setFill('blue');
+      elif (colorNum == 3):
+         rect.setOutline('orange');
+         rect.setFill('orange');
+      elif (colorNum == 4):
+         rect.setOutline('yellow');
+         rect.setFill('yellow');
+      elif (colorNum == 5):
+         rect.setOutline('green');
+         rect.setFill('green');
+      elif (colorNum == 6):
+         rect.setOutline('cyan');
+         rect.setFill('cyan');
+      else:
+         print("invalid asisngment or color");
+      rect.draw(win);
+
+
+# colors
+k = 6;
+gridSize = 1;
+vertList = generate_normal_shape(4, 0.1, gridSize)
 #vertList = [];
 # list of 4 squares
 #vertList.append([1, np.array([(0.0, 0.0), (0.0, 1.0), (1.0, 1.0), (1.0, 0.0)])]);
@@ -130,8 +195,14 @@ print(vertList);
 graph = polyToGraph(vertList);
 print("graph")
 print(graph);
-printCNF(graph, 6);
+printCNF(graph, k);
 
+name = input("Enter to proceed ")
 
+assignment = readAssignemnt("satAssignment.txt");
+print("assignment");
+print(assignment);
+displayPlane(vertList, k, assignment, gridSize);
 
+name = input("Enter to close ")
 
