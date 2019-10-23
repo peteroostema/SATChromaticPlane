@@ -31,19 +31,26 @@ from graphics import *
 #               #shape = add_new[:]
 #    return shape_list
 
-def makeSquare(xCord, yCord, edge_length):
-   return np.array([(xCord,yCord),(xCord, yCord + edge_length),(xCord + edge_length, yCord + edge_length),(xCord + edge_length, yCord)]);
+def makeSquare(xCord, yCord, edge_length, plane_width, plane_height):
+   xMax = xCord + edge_length;
+   if (xMax > plane_width):
+      xMax = plane_width;
+   yMax = yCord + edge_length
+   if (yMax > plane_height):
+      yMax = plane_height;
+   return np.array([(xCord,yCord),(xCord, yMax),(xMax, yMax),(xMax, yCord)]);
 
 
-def generate_normal_shape(num_of_edges, edge_length, plane_size):
+def generate_normal_shape(num_of_edges, edge_length, plane_width, plane_height):
     shape_list = []
     if num_of_edges == 4:
         #shape = [1, np.array([(0,0),(0,edge_length),(edge_length,edge_length),(edge_length,0)])]
-        col = int(math.ceil(plane_size/edge_length))
+        col = int(math.ceil(plane_width/edge_length));
+        row = int(math.ceil(plane_height/edge_length));
         for i in range(col):
-            for j in range(col):
-               npArray = makeSquare(i*edge_length, j*edge_length, edge_length);
-               shape_list.append([i*col + j + 1, npArray.copy()])
+            for j in range(row):
+               npArray = makeSquare(i*edge_length, j*edge_length, edge_length, plane_width, plane_height);
+               shape_list.append([i*row + j + 1, npArray.copy()])
     return shape_list
 
 def polyToGraph(polygons):
@@ -100,8 +107,16 @@ def polyToGraph(polygons):
 # k colors
 def printCNF(graph, k):
    file = open("tile.cnf","w+")
-   n = max(graph);
-   n = max(n);
+   #n = max(graph);
+   #n = max(max(graph)[0], max(graph)[1]);
+   n = 0;
+   for i in range(len(graph)):
+      if (n < graph[i][0]):
+         n = graph[i][0];
+      if (n < graph[i][1]):
+         n = graph[i][1];
+   print(n);
+   #n = max(n);
    #n += 1;
    m = len(graph);
    file.write("p cnf %d %d\n" % (n*k, n + m*k));
@@ -119,25 +134,49 @@ def printCNF(graph, k):
          vert2 = graph[i][1] - 1;
          file.write("-%d -%d 0\n" % (vert1 * k + j, vert2 * k + j));
 
+# copy/paste file
+#def readAssignemnt(satFile):
+#   with open(satFile) as file:
+#      #w, h = [int(x) for x in next(f).split()] # read first line
+#      assignment = []
+#      for line in file: # read rest of lines
+#         #assignment.append([int(x) for x in line.split()])
+#         for x in line.split():
+#            assignment.append(int(x));
+#   return assignment;
+
+# read from cadical output
 def readAssignemnt(satFile):
    with open(satFile) as file:
+      fileInString = file.read()
+      #print(fileInString.split("\ns ",1));
+      outputSecondHalf = fileInString.split("\ns ", 1)[1];
+      assignmentText = outputSecondHalf.split("\nc ", 1)[0];
+      print("assignmentText");
+      print(assignmentText);
       #w, h = [int(x) for x in next(f).split()] # read first line
       assignment = []
-      for line in file: # read rest of lines
-         #assignment.append([int(x) for x in line.split()])
-         for x in line.split():
+
+      for x in assignmentText.split():
+         #print("x");
+         #print(x);
+         if (x == "UNSATISFIABLE"):
+            print("UNSAT");
+         elif (x == "SATISFIABLE"):
+            print("SAT");
+         elif (not(x == "v")):
             assignment.append(int(x));
    return assignment;
 
-def displayPlane(vertList, k, assignment, gridSize):
-   win = GraphWin("test", 400, 400);
+def displayPlane(vertList, k, assignment, gridWidth, gridHeight):
+   win = GraphWin("test", 400, 400 * (gridHeight/gridWidth));
    n = len(vertList);
-   scaling = 400/gridSize;
+   scaling = 400/gridWidth;
    for i in range(n):
       # find color #
       colorNum = 0;
       counter = 0;
-      for j in range(i*6, (i+1)*6):
+      for j in range(i*k, (i+1)*k):
          counter += 1;
          print("assignemnt[j]");
          print(assignment[j]);
@@ -181,9 +220,11 @@ def displayPlane(vertList, k, assignment, gridSize):
 
 
 # colors
-k = 6;
-gridSize = 1;
-vertList = generate_normal_shape(4, 0.1, gridSize)
+k = 5;
+#gridSize = 1;
+gridWidth = 2;
+gridHeight = 2;
+vertList = generate_normal_shape(4, 0.1, gridWidth, gridHeight)
 #vertList = [];
 # list of 4 squares
 #vertList.append([1, np.array([(0.0, 0.0), (0.0, 1.0), (1.0, 1.0), (1.0, 0.0)])]);
@@ -199,10 +240,10 @@ printCNF(graph, k);
 
 name = input("Enter to proceed ")
 
-assignment = readAssignemnt("satAssignment.txt");
+assignment = readAssignemnt("cadicalOut.txt"); #satAssignment.txt
 print("assignment");
 print(assignment);
-displayPlane(vertList, k, assignment, gridSize);
+displayPlane(vertList, k, assignment, gridWidth, gridHeight);
 
 name = input("Enter to close ")
 
