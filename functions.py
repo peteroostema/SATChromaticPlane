@@ -4,32 +4,63 @@ import math
 import copy
 from graphics import *
 
-#def generate_normal_shape(num_of_edges, edge_length, plane_size):
-#    shape_list = []
-#    if num_of_edges == 4:
-#        shape = [1, np.array([(0,0),(0,edge_length),(edge_length,edge_length),(edge_length,0)])]
-#        shape_list.append(shape)
-#        col = int(math.floor(plane_size/edge_length))
-#        firstOfRow = shape[:];
-#        for i in range(col):
-#            new_shape = firstOfRow.copy();
-#            new_shape[0] += i*col;
-#            for k in range(num_of_edges):
-#               new_shape[1][k] += (0, i*edge_length);
-#            print("firstOfRow");
-#            print(firstOfRow);
-#            print("new_shape");
-#            print(new_shape);
-#            for j in range(col):
-#               new_shape[0] += 1;
-#               for k in range(num_of_edges):
-#                  new_shape[1][k] = new_shape[1][k] + (edge_length, 0);
-#               #add_new = new_shape[:]
-#               add_new = new_shape.copy();
-#               print(add_new);
-#               shape_list.append(add_new.copy())
-#               #shape = add_new[:]
-#    return shape_list
+def makeHexagons(xCord, yCord, edge_length, plane_width, plane_height, shape_list, shapeNum):
+   #npArray = makeSquare(i*edge_length, j*edge_length, edge_length, plane_width, plane_height);
+   
+   if ((0.0 - 2*edge_length > yCord) or ( 0.0 - 2*edge_length > xCord)):
+      return shapeNum;
+   if ((xCord > plane_width) or (yCord > plane_height)):
+      return shapeNum;
+   
+   print("startPos");
+   print((xCord, yCord));
+   
+   pointArray = [];
+   pointArray.append((xCord, yCord));
+   pointArray.append((pointArray[0][0] - edge_length * math.cos(math.pi / 3), pointArray[0][1] + edge_length * math.sin(math.pi / 3)));
+   pointArray.append((pointArray[1][0] + edge_length * math.cos(math.pi / 3), pointArray[1][1] + edge_length * math.sin(math.pi / 3)));
+   pointArray.append((pointArray[2][0] + edge_length, pointArray[2][1]));
+   pointArray.append((pointArray[3][0] + edge_length * math.cos(math.pi / 3), pointArray[3][1] - edge_length * math.sin(math.pi / 3)));
+   pointArray.append((pointArray[4][0] - edge_length * math.cos(math.pi / 3), pointArray[4][1] - edge_length * math.sin(math.pi / 3)));
+   for i in range(len(pointArray)):
+      print("bf");
+      print(pointArray[i]);
+      for j in range(len(pointArray[i])):
+         #print("i");
+         #print(i);
+         #print("j");
+         #print(j);
+         if (pointArray[i][j] < 0.0):
+            #pointArray[i][j] = 0.0;
+            if (j == 0):
+               pointArray[i] = (0.0, pointArray[i][j+1]);
+            else:
+               pointArray[i] = (pointArray[i][j-1], 0.0);
+      if (pointArray[i][0] > plane_width):
+         #pointArray[i][j] = plane_width;
+         pointArray[i] = (plane_width, pointArray[i][1]);
+      if (pointArray[i][1] > plane_height):
+         pointArray[i] = (pointArray[i][0], plane_height);
+      print("af");
+      print(pointArray[i]);
+   print(pointArray);
+   
+   samePoint = 1;
+   for i in range(len(pointArray) - 1):
+      if ((pointArray[i][0] != pointArray[i+1][0]) and (pointArray[i][1] != pointArray[i+1][1])):
+         samePoint = 0;
+   if (samePoint == 1):
+      return shapeNum;
+
+   shape_list.append([shapeNum, np.array(pointArray)])
+   shapeNum += 1;
+
+
+   shapeNum = makeHexagons(pointArray[2][0], pointArray[2][1], edge_length, plane_width, plane_height, shape_list, shapeNum)
+   shapeNum = makeHexagons(pointArray[4][0], pointArray[4][1], edge_length, plane_width, plane_height, shape_list, shapeNum)
+   #shapeNum = makeHexagons(pointArray[4][0] + edge_length * math.cos(math.pi / 3), pointArray[4][1] - edge_length * math.sin(math.pi / 3), edge_length, plane_width, plane_height, shape_list, shapeNum)
+   return shapeNum;
+   #return np.array([(xCord,yCord),(xCord, yMax),(xMax, yMax),(xMax, yCord)]);
 
 def makeSquare(xCord, yCord, edge_length, plane_width, plane_height):
    xMax = xCord + edge_length;
@@ -44,13 +75,16 @@ def makeSquare(xCord, yCord, edge_length, plane_width, plane_height):
 def generate_normal_shape(num_of_edges, edge_length, plane_width, plane_height):
     shape_list = []
     if num_of_edges == 4:
-        #shape = [1, np.array([(0,0),(0,edge_length),(edge_length,edge_length),(edge_length,0)])]
-        col = int(math.ceil(plane_width/edge_length));
-        row = int(math.ceil(plane_height/edge_length));
-        for i in range(col):
-            for j in range(row):
-               npArray = makeSquare(i*edge_length, j*edge_length, edge_length, plane_width, plane_height);
-               shape_list.append([i*row + j + 1, npArray.copy()])
+       #shape = [1, np.array([(0,0),(0,edge_length),(edge_length,edge_length),(edge_length,0)])]
+       col = int(math.ceil(plane_width/edge_length));
+       row = int(math.ceil(plane_height/edge_length));
+       for i in range(col):
+          for j in range(row):
+             npArray = makeSquare(i*edge_length, j*edge_length, edge_length, plane_width, plane_height);
+             shape_list.append([i*row + j + 1, npArray.copy()])
+    if num_of_edges == 6:
+      shapeNum = 1;
+      makeHexagons(0.0, 0.0, edge_length, plane_width, plane_height, shape_list, shapeNum);
     return shape_list
 
 def polyToGraph(polygons):
@@ -95,7 +129,11 @@ def polyToGraph(polygons):
                elif (dist > 1.0):
                   hasGreater = 1;
                elif (dist == 1.0):
-                  distOne = 1;
+                  if ((j < int(math.floor(len(polygons[i][1]) / 2))) or (l < math.floor(len(polygons[k][1])))):
+                     # assume two open faces not on opposite sides
+                     hasGreater = 1;
+                  else:
+                     distOne = 1;
             if ((hasLess == 1) and (hasGreater == 1)):
                distOne = 1;
          if (distOne == 1):
@@ -168,10 +206,11 @@ def readAssignemnt(satFile):
             assignment.append(int(x));
    return assignment;
 
-def displayPlane(vertList, k, assignment, gridWidth, gridHeight):
-   win = GraphWin("test", 400, 400 * (gridHeight/gridWidth));
+def displayPlane(vertList, k, assignment, gridWidth, gridHeight, gonNum):
+   basePixels = 600;
+   win = GraphWin("test", basePixels, basePixels * (gridHeight/gridWidth));
    n = len(vertList);
-   scaling = 400/gridWidth;
+   scaling = basePixels/gridWidth;
    for i in range(n):
       # find color #
       colorNum = 0;
@@ -182,19 +221,27 @@ def displayPlane(vertList, k, assignment, gridWidth, gridHeight):
          print(assignment[j]);
          if (assignment[j] > 0):
             colorNum = counter;
-      # make rectangle with opposite corners
-      print("points");
-#      print(vertList[i][1][0]);
-#      print(vertList[i][1][2]);
-#      print(tuple(vertList[i][1][2]));
-#      #print(Point(tuple(vertList[i][1][2])));
-#      print(Point(vertList[i][1][0][0], vertList[i][1][2][1]));
-      pt1 = Point(vertList[i][1][0][0] * scaling, vertList[i][1][0][1] * scaling);
-      pt2 = Point(vertList[i][1][2][0] * scaling, vertList[i][1][2][1] * scaling);
-      print(pt1);
-      print(pt2);
-      print(colorNum);
-      rect = Rectangle(pt1, pt2);
+      if (gonNum == 4):
+         # make rectangle with opposite corners
+         print("points");
+   #      print(vertList[i][1][0]);
+   #      print(vertList[i][1][2]);
+   #      print(tuple(vertList[i][1][2]));
+   #      #print(Point(tuple(vertList[i][1][2])));
+   #      print(Point(vertList[i][1][0][0], vertList[i][1][2][1]));
+         pt1 = Point(vertList[i][1][0][0] * scaling, vertList[i][1][0][1] * scaling);
+         pt2 = Point(vertList[i][1][2][0] * scaling, vertList[i][1][2][1] * scaling);
+         print(pt1);
+         print(pt2);
+         print(colorNum);
+         rect = Rectangle(pt1, pt2);
+      elif (gonNum == 6):
+         scaledPoints = [];
+         for j in range(len(vertList[i][1])):
+            scaledPoints.append(Point(vertList[i][1][j][0] * scaling, vertList[i][1][j][1] * scaling));
+         print("scaledPoints");
+         print(scaledPoints);
+         rect = Polygon(scaledPoints);
       # set color from number
       if (colorNum == 1):
          rect.setOutline('red');
@@ -214,17 +261,22 @@ def displayPlane(vertList, k, assignment, gridWidth, gridHeight):
       elif (colorNum == 6):
          rect.setOutline('cyan');
          rect.setFill('cyan');
+      elif (colorNum == '7'):
+         ect.setOutline('magenta');
+         rect.setFill('magenta');
       else:
          print("invalid asisngment or color");
       rect.draw(win);
 
 
 # colors
-k = 5;
+k = 6;
+# edge number, sides of the polygon
+gonNum = 6;
 #gridSize = 1;
 gridWidth = 2;
 gridHeight = 2;
-vertList = generate_normal_shape(4, 0.1, gridWidth, gridHeight)
+vertList = generate_normal_shape(gonNum, 0.2, gridWidth, gridHeight)
 #vertList = [];
 # list of 4 squares
 #vertList.append([1, np.array([(0.0, 0.0), (0.0, 1.0), (1.0, 1.0), (1.0, 0.0)])]);
@@ -243,7 +295,7 @@ name = input("Enter to proceed ")
 assignment = readAssignemnt("cadicalOut.txt"); #satAssignment.txt
 print("assignment");
 print(assignment);
-displayPlane(vertList, k, assignment, gridWidth, gridHeight);
+displayPlane(vertList, k, assignment, gridWidth, gridHeight, gonNum);
 
 name = input("Enter to close ")
 
