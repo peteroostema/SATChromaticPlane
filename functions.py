@@ -4,6 +4,9 @@ import math
 import copy
 from graphics import *
 
+col = 0;
+row = 0;
+
 def makeHexagon(xCord, yCord, edge_length, plane_width, plane_height, shape_list):
    print("startPos");
    print((xCord, yCord));
@@ -55,6 +58,8 @@ def makeSquare(xCord, yCord, edge_length, plane_width, plane_height):
 
 def generate_normal_shape(num_of_edges, edge_length, plane_width, plane_height):
     shape_list = []
+    global col
+    global row
     if num_of_edges == 4:
        #shape = [1, np.array([(0,0),(0,edge_length),(edge_length,edge_length),(edge_length,0)])]
        col = int(math.ceil(plane_width/edge_length));
@@ -72,12 +77,127 @@ def generate_normal_shape(num_of_edges, edge_length, plane_width, plane_height):
       for i in range(col):
          for j in range(row):
             npArray = np.empty;
+            edges = [];
             if ((j % 2) == 0):
                npArray = makeHexagon(i*hexWidth, j*hexHeight, edge_length, plane_width, plane_height, shape_list);
+               if (j-2 >= 0):
+                  edges.append(i * row + j-2);
+               if (j+2 < row):
+                  edges.append(i * row + j+2);
+               if (j-1 >= 0):
+                  edges.append(i * row + j-1);
+                  if (i-1 >= 0):
+                     edges.append((i-1) * row + (j-1));
+               if (j+1 < row):
+                  edges.append(i * row + j+1);
+                  if (i-1 >= 0):
+                     edges.append((i-1) * row + (j+1));
+               #i, j-1
+               #i, j+1
+               #i-1, j-1
+               #i-1, j+1
+               #i, j-2
+               #i, j+2
             else:
                npArray = makeHexagon((i+0.5)*hexWidth, j*hexHeight, edge_length, plane_width, plane_height, shape_list);
-            shape_list.append([i*row + j + 1, npArray.copy()]);
+               if (j-2 >= 0):
+                  edges.append(i * row + j-2);
+               if (j+2 < row):
+                  edges.append(i * row + j+2);
+               if (j-1 >= 0):
+                  edges.append(i * row + j-1);
+                  if (i+1 < col):
+                     edges.append((i+1) * row + (j-1));
+               if (j+1 < row):
+                  edges.append(i * row + j+1);
+                  if (i+1 < col):
+                     edges.append((i+1) * row + (j+1));
+               #i+1, j-1
+               #i+1, j+1
+               #i, j-1
+               #i, j+1
+               #i, j-2
+               #i, j+2
+            
+            shape_list.append([i*row + j + 1, npArray.copy(), i, j, edges]);
     return shape_list
+
+def dfsOneDist(polygons, centerID, thisID):
+   id = 0;
+   # check for 1 dist away
+   hasLess = 0;
+   hasGreater = 0;
+   distOne = 0;
+   for i in range(len(polygons[centerID][1])):
+      # iterate over vertices
+      for j in range(len(polygons[thisID][1])):
+         dist = la.norm(polygons[centerID][1][i] - polygons[thisID][1][j], 2);
+         #print(i, j, k, l);
+         #print(polygons[i][1][j]);
+         #print(dist);
+         if (dist < 1.0):
+            hasLess = 1;
+         elif (dist > 1.0):
+            hasGreater = 1;
+         elif (dist == 1.0):
+            if ((i < int(math.floor(len(polygons[centerID][1]) / 2))) and (j < int(math.floor(len(polygons[thisID][1]) / 2)))):
+            #if ((i < int(math.floor(len(polygons[centerID][1]) / 2))) or (j < math.floor(len(polygons[thisID][1])))):
+               # assume two open faces not on opposite sides
+               hasGreater = 1;
+            else:
+               distOne = 1;
+      if ((hasLess == 1) and (hasGreater == 1)):
+         distOne = 1;
+   if (distOne == 1):
+      # graph.append((i, j));
+      return thisID;
+   for i in range(len(polygons[thisID][4])): # negihbors
+      id = dfsOneDist(polygons, centerID, polygons[thisID][4][i]);
+      #print("id");
+      #print(id);
+      if (id != 0):
+         return id;
+
+def dfsFindCircle(polygons, centerID, searchID, circleIDs):
+   # check dist 1
+   # check for 1 dist away
+   hasLess = 0;
+   hasGreater = 0;
+   distOne = 0;
+   for i in range(len(polygons[centerID][1])):
+      # iterate over vertices
+      for j in range(len(polygons[searchID][1])):
+         dist = la.norm(polygons[centerID][1][i] - polygons[searchID][1][j], 2);
+         #print(i, j, k, l);
+         #print(polygons[i][1][j]);
+         #print(dist);
+         if (dist < 1.0):
+            hasLess = 1;
+         elif (dist > 1.0):
+            hasGreater = 1;
+         elif (dist == 1.0):
+            if ((i < int(math.floor(len(polygons[i][1]) / 2))) or (j < math.floor(len(polygons[j][1])))):
+               # assume two open faces not on opposite sides
+               hasGreater = 1;
+            else:
+               distOne = 1;
+      if ((hasLess == 1) and (hasGreater == 1)):
+         distOne = 1;
+   if (distOne == 1):
+      # graph.append((i, j));
+      #if (searchID+1) not in circleIDs :
+      #   circleIDs.append(searchID + 1);
+      if searchID not in circleIDs :
+         circleIDs.append(searchID);
+      else:
+         return circleIDs;
+   else:
+      return circleIDs;
+   for i in range(len(polygons[searchID][4])): # negihbors
+      circleIDs = dfsFindCircle(polygons, centerID, polygons[searchID][4][i], circleIDs);
+      #print("searchID");
+      #print(searchID);
+   return circleIDs;
 
 def polyToGraph(polygons):
 #   print("polygon id and verts");
@@ -100,6 +220,115 @@ def polyToGraph(polygons):
 #
 #   print("idk");
    graph = [];
+   
+   # DFS for hexagon 1 dist away
+   # ensure center is on a primary column
+   colID = math.floor(0.5*col);
+   if ((colID % 2) == 1):
+      colID += 1;
+   centerID = colID*row + math.ceil(0.5*row);# + 1;
+   print("centerID");
+   print(centerID);
+   print(polygons[centerID][2]);
+   print(polygons[centerID][3]);
+   id = dfsOneDist(polygons, centerID, centerID);
+   circleIDs = [];
+   circleIDs = dfsFindCircle(polygons, centerID, id, circleIDs);
+   print("circleIDs");
+   print(circleIDs);
+   circleOffsets = [];
+   for i in range(len(circleIDs)):
+      #print("i's j's, dif");
+      #print(polygons[centerID][2]);
+      #print(polygons[i][2]);
+      #print(polygons[centerID][3]);
+      #print(polygons[i][3]);
+      #print(polygons[centerID][2] - polygons[i][2]);
+      #print(polygons[centerID][3] - polygons[i][3]);
+      circleOffsets.append((-polygons[centerID][2] + polygons[circleIDs[i]][2], -polygons[centerID][3] + polygons[circleIDs[i]][3]));
+   print("circleOffsets");
+   print(circleOffsets);
+
+   # test dfs search just checking all possiblities
+   circleIDs = [];
+   #circleIDs = dfsFindCircle(polygons, centerID, id, circleIDs);
+   for k in range(len(polygons)):
+      hasLess = 0;
+      hasGreater = 0;
+      distOne = 0;
+      # iterate over vertices
+      for i in range(len(polygons[centerID][1])):
+         for j in range(len(polygons[k][1])):
+            dist = la.norm(polygons[centerID][1][i] - polygons[k][1][j], 2);
+            #print(i, j, k, l);
+            #print(polygons[i][1][j]);
+            #print(dist);
+            if (dist < 1.0):
+               hasLess = 1;
+            elif (dist > 1.0):
+               hasGreater = 1;
+            elif (dist == 1.0):
+               if ((i < int(math.floor(len(polygons[centerID][1]) / 2))) and (j < int(math.floor(len(polygons[k][1]) / 2)))):
+                  # assume two open faces not on opposite sides
+                  hasGreater = 1;
+               else:
+                  distOne = 1;
+         if ((hasLess == 1) and (hasGreater == 1)):
+            distOne = 1;
+      if (distOne == 1):
+         # graph.append((i, j));
+         #if polygons[k][0] not in circleIDs :
+         #   circleIDs.append(polygons[k][0]);
+         if k not in circleIDs :
+            circleIDs.append(k);
+   print("circleIDs");
+   print(circleIDs);
+   circleOffsets = [];
+   for i in range(len(circleIDs)):
+      circleOffsets.append((-polygons[centerID][2] + polygons[circleIDs[i]][2], -polygons[centerID][3] + polygons[circleIDs[i]][3]));
+   print("circleOffsets");
+   print(circleOffsets);
+
+   agumentedOffsets = [];
+   print("row col");
+   print(row);
+   print(col);
+   # check circles offset from each polygon
+   for i in range(len(polygons)):
+      for j in range(len(circleOffsets)):
+         destI = polygons[i][2] + circleOffsets[j][0];
+         destJ = polygons[i][3] + circleOffsets[j][1];
+         if (((polygons[i][2] % 2) == 1) and ((destI % 2) == 0)):#((circleOffsets[j][1] % 2) == 1)):
+            #if (circleOffsets[j][1] > 0):
+            #   destI += 1;
+            #else:
+            destI -= 1;
+         #print("pos");
+         #print((polygons[i][2], polygons[i][3]));
+         #print(circleOffsets[j])
+         #print("destIJ");
+         #print((destI, destJ));
+         if ((col > destI >= 0) and (row > destJ >= 0)):
+            if ((destI >= polygons[i][2]) and (destJ >= polygons[i][3]) ):
+               graph.append((i+1, destI*row + destJ + 1));
+               # con to 11, 2,
+   i = (row+1);
+   print(polygons[i][2]);
+   for j in range(len(circleOffsets)):
+      destI = circleOffsets[j][0];
+      destJ = circleOffsets[j][1];
+      if ((polygons[i][2] % 2) == 1) and ((circleOffsets[j][1] % 2) == 1):
+         #if (circleOffsets[j][1] > 0):
+         #   destI += 1;
+         #else:
+         destI -= 1;
+      agumentedOffsets.append((destI, destJ));
+   print("agumentedOffsets");
+   print(agumentedOffsets);
+   print("graph");
+   print(graph);
+   
+   graph = [];
    # iterate over polygons
    for i in range(len(polygons)):
       # iterate over all over polygons/verts
@@ -121,7 +350,7 @@ def polyToGraph(polygons):
                elif (dist > 1.0):
                   hasGreater = 1;
                elif (dist == 1.0):
-                  if ((j < int(math.floor(len(polygons[i][1]) / 2))) or (l < math.floor(len(polygons[k][1])))):
+                  if ((j < int(math.floor(len(polygons[i][1]) / 2))) and (l < int(math.floor(len(polygons[j][1]) / 2)))):
                      # assume two open faces not on opposite sides
                      hasGreater = 1;
                   else:
@@ -261,16 +490,17 @@ def displayPlane(vertList, k, assignment, gridWidth, gridHeight, gonNum):
       rect.draw(win);
    # draw line
    line = Line(Point(0.00 * scaling, 0.05 * scaling), Point(1.0 * scaling, 0.05 * scaling));
+   line.setOutline('white');
    line.draw(win);
 
 
 # colors
-k = 6;
+k = 7;
 # edge number, sides of the polygon
 gonNum = 6;
 #gridSize = 1;
-gridWidth = 2;
-gridHeight = 2;
+gridWidth = 2.5;
+gridHeight = 2.5;
 vertList = generate_normal_shape(gonNum, 0.1, gridWidth, gridHeight)
 #vertList = [];
 # list of 4 squares
