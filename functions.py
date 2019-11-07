@@ -7,9 +7,21 @@ from graphics import *
 col = 0;
 row = 0;
 
-def makeHexagon(xCord, yCord, edge_length, plane_width, plane_height, shape_list):
-   print("startPos");
-   print((xCord, yCord));
+def makeHexagon(edge_length, plane_width, plane_height, shape_list, indexMap, shapeNum, index0, index1):
+   xCord = index0 * edge_length * 2*math.sqrt(0.75) * math.cos(11*math.pi / 6);
+   xCord += index1 * edge_length * 2*math.sqrt(0.75) * math.cos(1*math.pi / 6);
+   yCord = index0 * edge_length * 2*math.sqrt(0.75) * math.sin(11*math.pi / 6);
+   yCord += index1 * edge_length * 2*math.sqrt(0.75) * math.sin(1*math.pi / 6);
+   #print("startPos");
+   #print((xCord, yCord));
+   
+   # check center in bounds
+   if ((xCord > plane_width) or (xCord < 0) or (yCord > plane_height) or (yCord < 0)):
+         return shapeNum;
+
+   for gon in shape_list:
+      if ((gon[2] == index0) and (gon[3] == index1)):
+         return shapeNum;
    
    pointArray = [];
    pointArray.append((xCord - edge_length * math.cos(math.pi / 3), yCord - edge_length * math.sin(math.pi / 3)));
@@ -18,14 +30,11 @@ def makeHexagon(xCord, yCord, edge_length, plane_width, plane_height, shape_list
    pointArray.append((xCord + edge_length * math.cos(math.pi / 3), yCord + edge_length * math.sin(math.pi / 3)));
    pointArray.append((xCord + edge_length, yCord));
    pointArray.append((xCord + edge_length * math.cos(math.pi / 3), yCord - edge_length * math.sin(math.pi / 3)));
+   # adjust verticies to bounds
    for i in range(len(pointArray)):
       #print("bf");
       #print(pointArray[i]);
       for j in range(len(pointArray[i])):
-         #print("i");
-         #print(i);
-         #print("j");
-         #print(j);
          if (pointArray[i][j] < 0.0):
             #pointArray[i][j] = 0.0;
             if (j == 0):
@@ -39,11 +48,23 @@ def makeHexagon(xCord, yCord, edge_length, plane_width, plane_height, shape_list
          pointArray[i] = (pointArray[i][0], plane_height);
       #print("af");
       #print(pointArray[i]);
-   print(pointArray);
+#   print(pointArray);
+#   print("index");
+#   print(index0);
+#   print(index1);
+#   print(xCord);
+#   print(yCord);
 
-   #shape_list.append([shapeNum, np.array(pointArray)])
+   shape_list.append([shapeNum, np.array(pointArray), index0, index1])
+   indexMap.update({(index0, index1): shapeNum});
+   shapeNum += 1;
+   shapeNum = makeHexagon(edge_length, plane_width, plane_height, shape_list, indexMap, shapeNum, index0+1, index1);
+   shapeNum = makeHexagon(edge_length, plane_width, plane_height, shape_list, indexMap, shapeNum, index0-1, index1);
+   shapeNum = makeHexagon(edge_length, plane_width, plane_height, shape_list, indexMap, shapeNum, index0, index1+1);
+   shapeNum = makeHexagon(edge_length, plane_width, plane_height, shape_list, indexMap, shapeNum, index0, index1-1);
+   return shapeNum;
    #shapeNum += 1;
-   return np.array(pointArray);
+   #return np.array(pointArray);
 
 
 def makeSquare(xCord, yCord, edge_length, plane_width, plane_height):
@@ -57,70 +78,24 @@ def makeSquare(xCord, yCord, edge_length, plane_width, plane_height):
 
 
 def generate_normal_shape(num_of_edges, edge_length, plane_width, plane_height):
-    shape_list = []
-    global col
-    global row
-    if num_of_edges == 4:
-       #shape = [1, np.array([(0,0),(0,edge_length),(edge_length,edge_length),(edge_length,0)])]
-       col = int(math.ceil(plane_width/edge_length));
-       row = int(math.ceil(plane_height/edge_length));
-       for i in range(col):
-          for j in range(row):
-             npArray = makeSquare(i*edge_length, j*edge_length, edge_length, plane_width, plane_height);
-             shape_list.append([i*row + j + 1, npArray.copy()]);
-    if num_of_edges == 6:
-      hexHeight = edge_length*math.sqrt(0.75);
-      hexWidth = 3*edge_length;
+   shape_list = []
+   indexMap = {};
+   global col
+   global row
+   if num_of_edges == 4:
       #shape = [1, np.array([(0,0),(0,edge_length),(edge_length,edge_length),(edge_length,0)])]
-      col = int(math.ceil(plane_width/hexWidth));
-      row = int(math.ceil(plane_height/hexHeight));
+      col = int(math.ceil(plane_width/edge_length));
+      row = int(math.ceil(plane_height/edge_length));
       for i in range(col):
          for j in range(row):
-            npArray = np.empty;
-            edges = [];
-            if ((j % 2) == 0):
-               npArray = makeHexagon(i*hexWidth, j*hexHeight, edge_length, plane_width, plane_height, shape_list);
-               if (j-2 >= 0):
-                  edges.append(i * row + j-2);
-               if (j+2 < row):
-                  edges.append(i * row + j+2);
-               if (j-1 >= 0):
-                  edges.append(i * row + j-1);
-                  if (i-1 >= 0):
-                     edges.append((i-1) * row + (j-1));
-               if (j+1 < row):
-                  edges.append(i * row + j+1);
-                  if (i-1 >= 0):
-                     edges.append((i-1) * row + (j+1));
-               #i, j-1
-               #i, j+1
-               #i-1, j-1
-               #i-1, j+1
-               #i, j-2
-               #i, j+2
-            else:
-               npArray = makeHexagon((i+0.5)*hexWidth, j*hexHeight, edge_length, plane_width, plane_height, shape_list);
-               if (j-2 >= 0):
-                  edges.append(i * row + j-2);
-               if (j+2 < row):
-                  edges.append(i * row + j+2);
-               if (j-1 >= 0):
-                  edges.append(i * row + j-1);
-                  if (i+1 < col):
-                     edges.append((i+1) * row + (j-1));
-               if (j+1 < row):
-                  edges.append(i * row + j+1);
-                  if (i+1 < col):
-                     edges.append((i+1) * row + (j+1));
-               #i+1, j-1
-               #i+1, j+1
-               #i, j-1
-               #i, j+1
-               #i, j-2
-               #i, j+2
-            
-            shape_list.append([i*row + j + 1, npArray.copy(), i, j, edges]);
-    return shape_list
+            npArray = makeSquare(i*edge_length, j*edge_length, edge_length, plane_width, plane_height);
+            shape_list.append([i*row + j + 1, npArray.copy()]);
+   if num_of_edges == 6:
+      shapeNum = 0;
+      index0 = 0;
+      index1 = 0;
+      shapeNum = makeHexagon(edge_length, plane_width, plane_height, shape_list, indexMap, shapeNum, index0, index1);
+   return (shape_list, indexMap);
 
 def dfsOneDist(polygons, centerID, thisID):
    id = 0;
@@ -199,7 +174,7 @@ def dfsFindCircle(polygons, centerID, searchID, circleIDs):
       #print(searchID);
    return circleIDs;
 
-def polyToGraph(polygons):
+def polyToGraph(polygons, indexMap):
 #   print("polygon id and verts");
 #   print(polygons[1]);
 #   print("num of gons");
@@ -222,34 +197,47 @@ def polyToGraph(polygons):
    graph = [];
    
    # DFS for hexagon 1 dist away
+   
    # ensure center is on a primary column
-   colID = math.floor(0.5*col);
-   if ((colID % 2) == 1):
-      colID += 1;
-   centerID = colID*row + math.ceil(0.5*row);# + 1;
+   maxCol = 0;
+   maxRow = 0;
+   for gon in polygons:
+      xCord = gon[1][0][0];
+      yCord = gon[1][0][1];
+      print("cords");
+      print(xCord);
+      print(yCord);
+      if (xCord > 1):
+         if (yCord > 1):
+            centerID = indexMap[(gon[2], gon[3]+1)];
+            break;
+   colID = math.ceil(0.5*maxCol);
+   #if ((colID % 2) == 1):
+   #   colID += 1;
+   #centerID = colID*maxRow + math.ceil(0.5*maxRow);# + 1;
    print("centerID");
    print(centerID);
-   print(polygons[centerID][2]);
-   print(polygons[centerID][3]);
-   id = dfsOneDist(polygons, centerID, centerID);
-   circleIDs = [];
-   circleIDs = dfsFindCircle(polygons, centerID, id, circleIDs);
-   print("circleIDs");
-   print(circleIDs);
-   circleOffsets = [];
-   for i in range(len(circleIDs)):
-      #print("i's j's, dif");
-      #print(polygons[centerID][2]);
-      #print(polygons[i][2]);
-      #print(polygons[centerID][3]);
-      #print(polygons[i][3]);
-      #print(polygons[centerID][2] - polygons[i][2]);
-      #print(polygons[centerID][3] - polygons[i][3]);
-      circleOffsets.append((-polygons[centerID][2] + polygons[circleIDs[i]][2], -polygons[centerID][3] + polygons[circleIDs[i]][3]));
-   print("circleOffsets");
-   print(circleOffsets);
+#   print(polygons[centerID][2]);
+#   print(polygons[centerID][3]);
+#   id = dfsOneDist(polygons, centerID, centerID);
+#   circleIDs = [];
+#   circleIDs = dfsFindCircle(polygons, centerID, id, circleIDs);
+#   print("circleIDs");
+#   print(circleIDs);
+#   circleOffsets = [];
+#   for i in range(len(circleIDs)):
+#      #print("i's j's, dif");
+#      #print(polygons[centerID][2]);
+#      #print(polygons[i][2]);
+#      #print(polygons[centerID][3]);
+#      #print(polygons[i][3]);
+#      #print(polygons[centerID][2] - polygons[i][2]);
+#      #print(polygons[centerID][3] - polygons[i][3]);
+#      circleOffsets.append((-polygons[centerID][2] + polygons[circleIDs[i]][2], -polygons[centerID][3] + polygons[circleIDs[i]][3]));
+#   print("circleOffsets");
+#   print(circleOffsets);
 
-   # test dfs search just checking all possiblities
+   # just check all possiblities
    circleIDs = [];
    #circleIDs = dfsFindCircle(polygons, centerID, id, circleIDs);
    for k in range(len(polygons)):
@@ -298,20 +286,28 @@ def polyToGraph(polygons):
       for j in range(len(circleOffsets)):
          destI = polygons[i][2] + circleOffsets[j][0];
          destJ = polygons[i][3] + circleOffsets[j][1];
-         if (((polygons[i][2] % 2) == 1) and ((destI % 2) == 0)):#((circleOffsets[j][1] % 2) == 1)):
+         #if (((polygons[i][2] % 2) == 1) and ((destI % 2) == 0)):#((circleOffsets[j][1] % 2) == 1)):
             #if (circleOffsets[j][1] > 0):
             #   destI += 1;
             #else:
-            destI -= 1;
+            #destI -= 1;
          #print("pos");
          #print((polygons[i][2], polygons[i][3]));
          #print(circleOffsets[j])
          #print("destIJ");
          #print((destI, destJ));
-         if ((col > destI >= 0) and (row > destJ >= 0)):
-            if ((destI >= polygons[i][2]) and (destJ >= polygons[i][3]) ):
-               graph.append((i+1, destI*row + destJ + 1));
-               # con to 11, 2,
+         #if ((col > destI >= 0) and (row > destJ >= 0)):
+         #   if ((destI >= polygons[i][2]) and (destJ >= polygons[i][3]) ):
+         #      graph.append((i+1, destI*row + destJ + 1));
+         #      # con to 11, 2,
+         try:
+            shapeID = indexMap[(destI, destJ)];
+            print("shapeID");
+            print(shapeID);
+            if (shapeID):
+               graph.append((i+1, shapeID+1));
+         except KeyError as error:
+            error = 0;
    i = (row+1);
    print(polygons[i][2]);
    for j in range(len(circleOffsets)):
@@ -328,38 +324,38 @@ def polyToGraph(polygons):
    print("graph");
    print(graph);
    
-   graph = [];
-   # iterate over polygons
-   for i in range(len(polygons)):
-      # iterate over all over polygons/verts
-      for k in range((i+1), len(polygons)):
-         # track polygon has dist 1
-         distOne = 0;
-         hasLess = 0;
-         hasGreater = 0;
-         # iterate over vertices
-         for j in range(len(polygons[i][1])):
-            # iterate over vertices
-            for l in range(len(polygons[k][1])):
-               dist = la.norm(polygons[i][1][j] - polygons[k][1][l], 2);
-               #print(i, j, k, l);
-               #print(polygons[i][1][j]);
-               #print(dist);
-               if (dist < 1.0):
-                  hasLess = 1;
-               elif (dist > 1.0):
-                  hasGreater = 1;
-               elif (dist == 1.0):
-                  if ((j < int(math.floor(len(polygons[i][1]) / 2))) and (l < int(math.floor(len(polygons[j][1]) / 2)))):
-                     # assume two open faces not on opposite sides
-                     hasGreater = 1;
-                  else:
-                     distOne = 1;
-            if ((hasLess == 1) and (hasGreater == 1)):
-               distOne = 1;
-         if (distOne == 1):
-            # graph.append((i, j));
-            graph.append((polygons[i][0], polygons[k][0]));
+#   graph = [];
+#   # iterate over polygons
+#   for i in range(len(polygons)):
+#      # iterate over all over polygons/verts
+#      for k in range((i+1), len(polygons)):
+#         # track polygon has dist 1
+#         distOne = 0;
+#         hasLess = 0;
+#         hasGreater = 0;
+#         # iterate over vertices
+#         for j in range(len(polygons[i][1])):
+#            # iterate over vertices
+#            for l in range(len(polygons[k][1])):
+#               dist = la.norm(polygons[i][1][j] - polygons[k][1][l], 2);
+#               #print(i, j, k, l);
+#               #print(polygons[i][1][j]);
+#               #print(dist);
+#               if (dist < 1.0):
+#                  hasLess = 1;
+#               elif (dist > 1.0):
+#                  hasGreater = 1;
+#               elif (dist == 1.0):
+#                  if ((j < int(math.floor(len(polygons[i][1]) / 2))) and (l < int(math.floor(len(polygons[j][1]) / 2)))):
+#                     # assume two open faces not on opposite sides
+#                     hasGreater = 1;
+#                  else:
+#                     distOne = 1;
+#            if ((hasLess == 1) and (hasGreater == 1)):
+#               distOne = 1;
+#         if (distOne == 1):
+#            # graph.append((i, j));
+#            graph.append((polygons[i][0]+1, polygons[k][0]+1));
    return graph;
 
 # graph of edges
@@ -499,9 +495,9 @@ k = 7;
 # edge number, sides of the polygon
 gonNum = 6;
 #gridSize = 1;
-gridWidth = 2.5;
-gridHeight = 2.5;
-vertList = generate_normal_shape(gonNum, 0.1, gridWidth, gridHeight)
+gridWidth = 6;
+gridHeight = 6;
+(vertList, indexMap) = generate_normal_shape(gonNum, 0.1, gridWidth, gridHeight)
 #vertList = [];
 # list of 4 squares
 #vertList.append([1, np.array([(0.0, 0.0), (0.0, 1.0), (1.0, 1.0), (1.0, 0.0)])]);
@@ -510,7 +506,7 @@ vertList = generate_normal_shape(gonNum, 0.1, gridWidth, gridHeight)
 #vertList.append([4, np.array([(1.0, 1.0), (1.0, 2.0), (2.0, 2.0), (2.0, 1.0)])]);
 print("vertList");
 print(vertList);
-graph = polyToGraph(vertList);
+graph = polyToGraph(vertList, indexMap);
 print("graph")
 print(graph);
 printCNF(graph, k);
