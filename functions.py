@@ -174,6 +174,84 @@ def dfsFindCircle(polygons, centerID, searchID, circleIDs):
       #print(searchID);
    return circleIDs;
 
+def polyToGraphCenReduce(polygons, indexMap, edgeLength, percentWiggle):
+   graph = [];
+   
+   # ensure center is on a primary column
+   maxCol = 0;
+   maxRow = 0;
+   for gon in polygons:
+      xCord = gon[1][0][0];
+      yCord = gon[1][0][1];
+      print("cords");
+      print(xCord);
+      print(yCord);
+      if (xCord > 1):
+         if (yCord > 1):
+            centerID = indexMap[(gon[2], gon[3]+1)];
+            break;
+   colID = math.ceil(0.5*maxCol);
+
+   print("centerID");
+   print(centerID);
+
+   # just check all possiblities
+   circleIDs = [];
+   # shape_list.append([shapeNum, np.array(pointArray), index0, index1])
+   # check dist of center
+   xCenCen = polygons[centerID][2] * edgeLength * 2*math.sqrt(0.75) * math.cos(11*math.pi / 6);
+   xCenCen += polygons[centerID][3] * edgeLength * 2*math.sqrt(0.75) * math.cos(1*math.pi / 6);
+   yCenCen = polygons[centerID][2] * edgeLength * 2*math.sqrt(0.75) * math.sin(11*math.pi / 6);
+   yCenCen += polygons[centerID][3] * edgeLength * 2*math.sqrt(0.75) * math.sin(1*math.pi / 6);
+   #circleIDs = dfsFindCircle(polygons, centerID, id, circleIDs);
+   for k in range(len(polygons)):
+      hasLess = 0;
+      hasGreater = 0;
+      distOne = 0;
+      
+      xCenK = polygons[k][2] * edgeLength * 2*math.sqrt(0.75) * math.cos(11*math.pi / 6);
+      xCenK += polygons[k][3] * edgeLength * 2*math.sqrt(0.75) * math.cos(1*math.pi / 6);
+      yCenK = polygons[k][2] * edgeLength * 2*math.sqrt(0.75) * math.sin(11*math.pi / 6);
+      yCenK += polygons[k][3] * edgeLength * 2*math.sqrt(0.75) * math.sin(1*math.pi / 6);
+      cenDist = la.norm((xCenCen - xCenK, yCenCen - yCenK), 2);
+      if (cenDist + 2*edgeLength*percentWiggle > 1):
+         if (cenDist - 2*edgeLength*percentWiggle < 1):
+            distOne = 1;
+      if (distOne == 1):
+         # graph.append((i, j));
+         #if polygons[k][0] not in circleIDs :
+         #   circleIDs.append(polygons[k][0]);
+         if k not in circleIDs :
+            circleIDs.append(k);
+   print("circleIDs");
+   print(circleIDs);
+   circleOffsets = [];
+   for i in range(len(circleIDs)):
+      circleOffsets.append((-polygons[centerID][2] + polygons[circleIDs[i]][2], -polygons[centerID][3] + polygons[circleIDs[i]][3]));
+   print("circleOffsets");
+   print(circleOffsets);
+
+   agumentedOffsets = [];
+   print("row col");
+   print(row);
+   print(col);
+   # check circles offset from each polygon
+   for i in range(len(polygons)):
+      for j in range(len(circleOffsets)):
+         destI = polygons[i][2] + circleOffsets[j][0];
+         destJ = polygons[i][3] + circleOffsets[j][1];
+         try:
+            shapeID = indexMap[(destI, destJ)];
+            print("shapeID");
+            print(shapeID);
+            if (shapeID):
+               graph.append((i+1, shapeID+1));
+         except KeyError as error:
+            error = 0;
+   print("graph");
+   print(graph);
+   return graph;
+
 def polyToGraph(polygons, indexMap):
 #   print("polygon id and verts");
 #   print(polygons[1]);
@@ -461,25 +539,25 @@ def displayPlane(vertList, k, assignment, gridWidth, gridHeight, gonNum):
          rect = Polygon(scaledPoints);
       # set color from number
       if (colorNum == 1):
-         rect.setOutline('black');
+         rect.setOutline('red');
          rect.setFill('red');
       elif (colorNum == 2):
-         rect.setOutline('black');
+         rect.setOutline('blue');
          rect.setFill('blue');
       elif (colorNum == 3):
-         rect.setOutline('black');
+         rect.setOutline('orange');
          rect.setFill('orange');
       elif (colorNum == 4):
-         rect.setOutline('black');
+         rect.setOutline('yellow');
          rect.setFill('yellow');
       elif (colorNum == 5):
-         rect.setOutline('black');
+         rect.setOutline('green');
          rect.setFill('green');
       elif (colorNum == 6):
-         rect.setOutline('black');
+         rect.setOutline('cyan');
          rect.setFill('cyan');
       elif (colorNum == 7):
-         rect.setOutline('black');
+         rect.setOutline('magenta');
          rect.setFill('magenta');
       else:
          print("invalid asisngment or color");
@@ -489,15 +567,17 @@ def displayPlane(vertList, k, assignment, gridWidth, gridHeight, gonNum):
    line.setOutline('white');
    line.draw(win);
 
-
+print(sys.getrecursionlimit());
+sys.setrecursionlimit(40000);
 # colors
-k = 7;
+k = 6;
 # edge number, sides of the polygon
 gonNum = 6;
+edgeLength = 0.05;
 #gridSize = 1;
-gridWidth = 6;
-gridHeight = 6;
-(vertList, indexMap) = generate_normal_shape(gonNum, 0.1, gridWidth, gridHeight)
+gridWidth = 4;
+gridHeight = 4;
+(vertList, indexMap) = generate_normal_shape(gonNum, edgeLength, gridWidth, gridHeight)
 #vertList = [];
 # list of 4 squares
 #vertList.append([1, np.array([(0.0, 0.0), (0.0, 1.0), (1.0, 1.0), (1.0, 0.0)])]);
@@ -506,7 +586,8 @@ gridHeight = 6;
 #vertList.append([4, np.array([(1.0, 1.0), (1.0, 2.0), (2.0, 2.0), (2.0, 1.0)])]);
 print("vertList");
 print(vertList);
-graph = polyToGraph(vertList, indexMap);
+#graph = polyToGraph(vertList, indexMap);
+graph = polyToGraphCenReduce(vertList, indexMap, edgeLength, 0.6)
 print("graph")
 print(graph);
 printCNF(graph, k);
