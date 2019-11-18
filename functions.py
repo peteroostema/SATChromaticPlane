@@ -16,7 +16,7 @@ def makeHexagon(edge_length, plane_width, plane_height, shape_list, indexMap, sh
    #print((xCord, yCord));
    
    # check center in bounds
-   if ((xCord > plane_width) or (xCord < 0) or (yCord > plane_height) or (yCord < 0)):
+   if ((xCord > plane_width + edge_length) or (xCord < 0 - edge_length) or (yCord > plane_height + edge_length) or (yCord < 0 - edge_length)):
          return shapeNum;
 
    for gon in shape_list:
@@ -97,16 +97,27 @@ def generate_normal_shape(num_of_edges, edge_length, plane_width, plane_height):
       shapeNum = makeHexagon(edge_length, plane_width, plane_height, shape_list, indexMap, shapeNum, index0, index1);
    return (shape_list, indexMap);
 
-def dfsOneDist(polygons, centerID, thisID):
-   id = 0;
+def dfsOneDist(cenID1, cenID2, searchID1, searchID2, edgeLength):
+   dist1ID = (0,0);
    # check for 1 dist away
    hasLess = 0;
    hasGreater = 0;
    distOne = 0;
-   for i in range(len(polygons[centerID][1])):
-      # iterate over vertices
-      for j in range(len(polygons[thisID][1])):
-         dist = la.norm(polygons[centerID][1][i] - polygons[thisID][1][j], 2);
+   
+   xCenCen = cenID1 * edgeLength * 2*math.sqrt(0.75) * math.cos(11*math.pi / 6);
+   xCenCen += cenID2 * edgeLength * 2*math.sqrt(0.75) * math.cos(1*math.pi / 6);
+   yCenCen = cenID1 * edgeLength * 2*math.sqrt(0.75) * math.sin(11*math.pi / 6);
+   yCenCen += cenID2 * edgeLength * 2*math.sqrt(0.75) * math.sin(1*math.pi / 6);
+   centerPoints = np.array(shrinkShape(xCenCen, yCenCen, edgeLength*1));
+   xCenK = searchID1 * edgeLength * 2*math.sqrt(0.75) * math.cos(11*math.pi / 6);
+   xCenK += searchID2 * edgeLength * 2*math.sqrt(0.75) * math.cos(1*math.pi / 6);
+   yCenK = searchID1 * edgeLength * 2*math.sqrt(0.75) * math.sin(11*math.pi / 6);
+   yCenK += searchID2 * edgeLength * 2*math.sqrt(0.75) * math.sin(1*math.pi / 6);
+   searchPoints = np.array(shrinkShape(xCenK, yCenK, edgeLength*1));
+   cenDist = la.norm((xCenCen - xCenK, yCenCen - yCenK), 2);
+   for i in range(len(centerPoints)):
+      for j in range(len(searchPoints)):
+         dist = la.norm(centerPoints[i] - searchPoints[j], 2);
          #print(i, j, k, l);
          #print(polygons[i][1][j]);
          #print(dist);
@@ -115,8 +126,7 @@ def dfsOneDist(polygons, centerID, thisID):
          elif (dist > 1.0):
             hasGreater = 1;
          elif (dist == 1.0):
-            if ((i < int(math.floor(len(polygons[centerID][1]) / 2))) and (j < int(math.floor(len(polygons[thisID][1]) / 2)))):
-            #if ((i < int(math.floor(len(polygons[centerID][1]) / 2))) or (j < math.floor(len(polygons[thisID][1])))):
+            if ((i < int(math.floor(6 / 2))) and (j < int(math.floor(6 / 2)))):
                # assume two open faces not on opposite sides
                hasGreater = 1;
             else:
@@ -125,24 +135,45 @@ def dfsOneDist(polygons, centerID, thisID):
          distOne = 1;
    if (distOne == 1):
       # graph.append((i, j));
-      return thisID;
-   for i in range(len(polygons[thisID][4])): # negihbors
-      id = dfsOneDist(polygons, centerID, polygons[thisID][4][i]);
-      #print("id");
-      #print(id);
-      if (id != 0):
-         return id;
+      return (searchID1, searchID2);
+   dist1ID = dfsOneDist(cenID1, cenID2, searchID1+1, searchID2, edgeLength);
+   if (dist1ID != (0,0)):
+      return dist1ID;
+#   for i in range(len(polygons[thisID][4])): # negihbors
+#      dist1ID = dfsOneDist(id1+1, id2);
+#      #print("id");
+#      #print(id);
+#      if (dist1ID != (0,0)):
+#         return dist1ID;
 
-def dfsFindCircle(polygons, centerID, searchID, circleIDs):
+
+def dfsFindCircle(cenID1, cenID2, searchID1, searchID2, edgeLength, percentWiggle, circleIDs, visitedIDs):
+   # return if this has been visited before
+   if (searchID1, searchID2) not in visitedIDs :
+      visitedIDs.append((searchID1, searchID2));
+   else:
+      return circleIDs;
+
    # check dist 1
    # check for 1 dist away
    hasLess = 0;
    hasGreater = 0;
    distOne = 0;
-   for i in range(len(polygons[centerID][1])):
-      # iterate over vertices
-      for j in range(len(polygons[searchID][1])):
-         dist = la.norm(polygons[centerID][1][i] - polygons[searchID][1][j], 2);
+   
+   xCenCen = cenID1 * edgeLength * 2*math.sqrt(0.75) * math.cos(11*math.pi / 6);
+   xCenCen += cenID2 * edgeLength * 2*math.sqrt(0.75) * math.cos(1*math.pi / 6);
+   yCenCen = cenID1 * edgeLength * 2*math.sqrt(0.75) * math.sin(11*math.pi / 6);
+   yCenCen += cenID2 * edgeLength * 2*math.sqrt(0.75) * math.sin(1*math.pi / 6);
+   centerPoints = np.array(shrinkShape(xCenCen, yCenCen, edgeLength*1));
+   xCenK = searchID1 * edgeLength * 2*math.sqrt(0.75) * math.cos(11*math.pi / 6);
+   xCenK += searchID2 * edgeLength * 2*math.sqrt(0.75) * math.cos(1*math.pi / 6);
+   yCenK = searchID1 * edgeLength * 2*math.sqrt(0.75) * math.sin(11*math.pi / 6);
+   yCenK += searchID2 * edgeLength * 2*math.sqrt(0.75) * math.sin(1*math.pi / 6);
+   searchPoints = np.array(shrinkShape(xCenK, yCenK, edgeLength*1));
+   cenDist = la.norm((xCenCen - xCenK, yCenCen - yCenK), 2);
+   for i in range(len(centerPoints)):
+      for j in range(len(searchPoints)):
+         dist = la.norm(centerPoints[i] - searchPoints[j], 2);
          #print(i, j, k, l);
          #print(polygons[i][1][j]);
          #print(dist);
@@ -151,7 +182,37 @@ def dfsFindCircle(polygons, centerID, searchID, circleIDs):
          elif (dist > 1.0):
             hasGreater = 1;
          elif (dist == 1.0):
-            if ((i < int(math.floor(len(polygons[i][1]) / 2))) or (j < math.floor(len(polygons[j][1])))):
+            if ((i < int(math.floor(6 / 2))) and (j < int(math.floor(6 / 2)))):
+               # assume two open faces not on opposite sides
+               hasGreater = 1;
+            else:
+               distOne = 1;
+      if ((hasLess == 1) and (hasGreater == 1)):
+         distOne = 1;
+   if (distOne == 1):
+      a = 0;
+   else:
+      return circleIDs;
+
+   # check connection on graph with reduced shapes
+   hasLess = 0;
+   hasGreater = 0;
+   distOne = 0;
+   centerPoints = np.array(shrinkShape(xCenCen, yCenCen, edgeLength*percentWiggle));
+   searchPoints = np.array(shrinkShape(xCenK, yCenK, edgeLength*percentWiggle));
+   cenDist = la.norm((xCenCen - xCenK, yCenCen - yCenK), 2);
+   for i in range(len(centerPoints)):
+      for j in range(len(searchPoints)):
+         dist = la.norm(centerPoints[i] - searchPoints[j], 2);
+         #print(i, j, k, l);
+         #print(polygons[i][1][j]);
+         #print(dist);
+         if (dist < 1.0):
+            hasLess = 1;
+         elif (dist > 1.0):
+            hasGreater = 1;
+         elif (dist == 1.0):
+            if ((i < int(math.floor(6 / 2))) and (j < int(math.floor(6 / 2)))):
                # assume two open faces not on opposite sides
                hasGreater = 1;
             else:
@@ -160,19 +221,34 @@ def dfsFindCircle(polygons, centerID, searchID, circleIDs):
          distOne = 1;
    if (distOne == 1):
       # graph.append((i, j));
-      #if (searchID+1) not in circleIDs :
-      #   circleIDs.append(searchID + 1);
-      if searchID not in circleIDs :
-         circleIDs.append(searchID);
+      if (searchID1, searchID2) not in circleIDs :
+         circleIDs.append((searchID1, searchID2));
       else:
          return circleIDs;
-   else:
-      return circleIDs;
-   for i in range(len(polygons[searchID][4])): # negihbors
-      circleIDs = dfsFindCircle(polygons, centerID, polygons[searchID][4][i], circleIDs);
+      
+   #print("searchIDs");
+   #print(searchID1);
+   #print(searchID2);
+   circleIDs = dfsFindCircle(cenID1, cenID2, searchID1+1, searchID2, edgeLength, percentWiggle, circleIDs, visitedIDs);
+   circleIDs = dfsFindCircle(cenID1, cenID2, searchID1, searchID2+1, edgeLength, percentWiggle, circleIDs, visitedIDs);
+   circleIDs = dfsFindCircle(cenID1, cenID2, searchID1-1, searchID2, edgeLength, percentWiggle, circleIDs, visitedIDs);
+   circleIDs = dfsFindCircle(cenID1, cenID2, searchID1, searchID2-1, edgeLength, percentWiggle, circleIDs, visitedIDs);
+   #for i in range(len(polygons[searchID][4])): # negihbors
+   #   circleIDs = dfsFindCircle(polygons, centerID, polygons[searchID][4][i], circleIDs);
       #print("searchID");
       #print(searchID);
    return circleIDs;
+
+# hexagons only
+def shrinkShape(xCord, yCord, edge_length):
+   pointArray = [];
+   pointArray.append((xCord - edge_length * math.cos(math.pi / 3), yCord - edge_length * math.sin(math.pi / 3)));
+   pointArray.append((xCord - edge_length, yCord));
+   pointArray.append((xCord - edge_length * math.cos(math.pi / 3), yCord + edge_length * math.sin(math.pi / 3)));
+   pointArray.append((xCord + edge_length * math.cos(math.pi / 3), yCord + edge_length * math.sin(math.pi / 3)));
+   pointArray.append((xCord + edge_length, yCord));
+   pointArray.append((xCord + edge_length * math.cos(math.pi / 3), yCord - edge_length * math.sin(math.pi / 3)));
+   return pointArray;
 
 def polyToGraphCenReduce(polygons, indexMap, edgeLength, percentWiggle):
    graph = [];
@@ -192,44 +268,74 @@ def polyToGraphCenReduce(polygons, indexMap, edgeLength, percentWiggle):
             break;
    colID = math.ceil(0.5*maxCol);
 
-   print("centerID");
-   print(centerID);
+#   print("centerID");
+#   print(centerID);
 
    # just check all possiblities
    circleIDs = [];
-   # shape_list.append([shapeNum, np.array(pointArray), index0, index1])
-   # check dist of center
-   xCenCen = polygons[centerID][2] * edgeLength * 2*math.sqrt(0.75) * math.cos(11*math.pi / 6);
-   xCenCen += polygons[centerID][3] * edgeLength * 2*math.sqrt(0.75) * math.cos(1*math.pi / 6);
-   yCenCen = polygons[centerID][2] * edgeLength * 2*math.sqrt(0.75) * math.sin(11*math.pi / 6);
-   yCenCen += polygons[centerID][3] * edgeLength * 2*math.sqrt(0.75) * math.sin(1*math.pi / 6);
-   #circleIDs = dfsFindCircle(polygons, centerID, id, circleIDs);
-   for k in range(len(polygons)):
-      hasLess = 0;
-      hasGreater = 0;
-      distOne = 0;
-      
-      xCenK = polygons[k][2] * edgeLength * 2*math.sqrt(0.75) * math.cos(11*math.pi / 6);
-      xCenK += polygons[k][3] * edgeLength * 2*math.sqrt(0.75) * math.cos(1*math.pi / 6);
-      yCenK = polygons[k][2] * edgeLength * 2*math.sqrt(0.75) * math.sin(11*math.pi / 6);
-      yCenK += polygons[k][3] * edgeLength * 2*math.sqrt(0.75) * math.sin(1*math.pi / 6);
-      cenDist = la.norm((xCenCen - xCenK, yCenCen - yCenK), 2);
-      if (cenDist + 2*edgeLength*percentWiggle > 1):
-         if (cenDist - 2*edgeLength*percentWiggle < 1):
-            distOne = 1;
-      if (distOne == 1):
-         # graph.append((i, j));
-         #if polygons[k][0] not in circleIDs :
-         #   circleIDs.append(polygons[k][0]);
-         if k not in circleIDs :
-            circleIDs.append(k);
+   
+   
+   # generate graph independant of grid
+   visitedIDs = [];
+   hexOnUnitCircle = dfsOneDist(0, 0, 0, 0, edgeLength);
+   print("1dist");
+   print(hexOnUnitCircle);
+   circlesIDs = dfsFindCircle(0, 0, hexOnUnitCircle[0], hexOnUnitCircle[1], edgeLength, percentWiggle, circleIDs, visitedIDs)
    print("circleIDs");
    print(circleIDs);
-   circleOffsets = [];
-   for i in range(len(circleIDs)):
-      circleOffsets.append((-polygons[centerID][2] + polygons[circleIDs[i]][2], -polygons[centerID][3] + polygons[circleIDs[i]][3]));
-   print("circleOffsets");
-   print(circleOffsets);
+   circleOffsets = circleIDs;
+   
+#   circleIDs = [];
+#   # shape_list.append([shapeNum, np.array(pointArray), index0, index1])
+#   # check dist of center
+#   xCenCen = polygons[centerID][2] * edgeLength * 2*math.sqrt(0.75) * math.cos(11*math.pi / 6);
+#   xCenCen += polygons[centerID][3] * edgeLength * 2*math.sqrt(0.75) * math.cos(1*math.pi / 6);
+#   yCenCen = polygons[centerID][2] * edgeLength * 2*math.sqrt(0.75) * math.sin(11*math.pi / 6);
+#   yCenCen += polygons[centerID][3] * edgeLength * 2*math.sqrt(0.75) * math.sin(1*math.pi / 6);
+#   centerPoints = np.array(shrinkShape(xCenCen, yCenCen, edgeLength*percentWiggle));
+#   #circleIDs = dfsFindCircle(polygons, centerID, id, circleIDs);
+#   for k in range(len(polygons)):
+#      hasLess = 0;
+#      hasGreater = 0;
+#      distOne = 0;
+#
+#      xCenK = polygons[k][2] * edgeLength * 2*math.sqrt(0.75) * math.cos(11*math.pi / 6);
+#      xCenK += polygons[k][3] * edgeLength * 2*math.sqrt(0.75) * math.cos(1*math.pi / 6);
+#      yCenK = polygons[k][2] * edgeLength * 2*math.sqrt(0.75) * math.sin(11*math.pi / 6);
+#      yCenK += polygons[k][3] * edgeLength * 2*math.sqrt(0.75) * math.sin(1*math.pi / 6);
+#      searchPoints = np.array(shrinkShape(xCenK, yCenK, edgeLength*percentWiggle));
+#      cenDist = la.norm((xCenCen - xCenK, yCenCen - yCenK), 2);
+#      for i in range(len(centerPoints)):
+#         for j in range(len(searchPoints)):
+#            dist = la.norm(centerPoints[i] - searchPoints[j], 2);
+#            #print(i, j, k, l);
+#            #print(polygons[i][1][j]);
+#            #print(dist);
+#            if (dist < 1.0):
+#               hasLess = 1;
+#            elif (dist > 1.0):
+#               hasGreater = 1;
+#            elif (dist == 1.0):
+#               if ((i < int(math.floor(len(polygons[centerID][1]) / 2))) and (j < int(math.floor(len(polygons[k][1]) / 2)))):
+#                  # assume two open faces not on opposite sides
+#                  hasGreater = 1;
+#               else:
+#                  distOne = 1;
+#         if ((hasLess == 1) and (hasGreater == 1)):
+#            distOne = 1;
+#      if (distOne == 1):
+#         # graph.append((i, j));
+#         #if polygons[k][0] not in circleIDs :
+#         #   circleIDs.append(polygons[k][0]);
+#         if k not in circleIDs :
+#            circleIDs.append(k);
+#   print("circleIDs");
+#   print(circleIDs);
+#   circleOffsets = [];
+#   for i in range(len(circleIDs)):
+#      circleOffsets.append((-polygons[centerID][2] + polygons[circleIDs[i]][2], -polygons[centerID][3] + polygons[circleIDs[i]][3]));
+#   print("circleOffsets");
+#   print(circleOffsets);
 
    agumentedOffsets = [];
    print("row col");
@@ -242,8 +348,8 @@ def polyToGraphCenReduce(polygons, indexMap, edgeLength, percentWiggle):
          destJ = polygons[i][3] + circleOffsets[j][1];
          try:
             shapeID = indexMap[(destI, destJ)];
-            print("shapeID");
-            print(shapeID);
+            #print("shapeID");
+            #print(shapeID);
             if (shapeID):
                graph.append((i+1, shapeID+1));
          except KeyError as error:
@@ -452,7 +558,7 @@ def printCNF(graph, k):
    #n = max(n);
    #n += 1;
    m = len(graph);
-   file.write("p cnf %d %d\n" % (n*k, n + m*k));
+   file.write("p cnf %d %d\n" % (n*k, n + m*k + 2)); # constrain two colors
    print("n");
    print(n);
    for i in range(n):
@@ -462,6 +568,10 @@ def printCNF(graph, k):
       mustHaveColorString += "0\n";
       file.write(mustHaveColorString);
    for i in range(m):
+      if (i == 0):
+         constrainColorStr = ("%d ");
+         file.write("%d 0\n" % ((graph[i][0] -1)*k + 1));
+         file.write("%d 0\n" % ((graph[i][1] -1)*k + 2));
       for j in range(1, k+1):
          vert1 = graph[i][0] - 1;
          vert2 = graph[i][1] - 1;
@@ -501,7 +611,7 @@ def readAssignemnt(satFile):
             assignment.append(int(x));
    return assignment;
 
-def displayPlane(vertList, k, assignment, gridWidth, gridHeight, gonNum):
+def displayPlane(vertList, k, assignment, gridWidth, gridHeight, gonNum, edgeLength, percentWiggle):
    basePixels = 600;
    win = GraphWin("test", basePixels, basePixels * (gridHeight/gridWidth));
    n = len(vertList);
@@ -512,8 +622,8 @@ def displayPlane(vertList, k, assignment, gridWidth, gridHeight, gonNum):
       counter = 0;
       for j in range(i*k, (i+1)*k):
          counter += 1;
-         print("assignemnt[j]");
-         print(assignment[j]);
+         #print("assignemnt[j]");
+         #print(assignment[j]);
          if (assignment[j] > 0):
             colorNum = counter;
       if (gonNum == 4):
@@ -526,16 +636,21 @@ def displayPlane(vertList, k, assignment, gridWidth, gridHeight, gonNum):
    #      print(Point(vertList[i][1][0][0], vertList[i][1][2][1]));
          pt1 = Point(vertList[i][1][0][0] * scaling, vertList[i][1][0][1] * scaling);
          pt2 = Point(vertList[i][1][2][0] * scaling, vertList[i][1][2][1] * scaling);
-         print(pt1);
-         print(pt2);
-         print(colorNum);
+         #print(pt1);
+         #print(pt2);
+         #print(colorNum);
          rect = Rectangle(pt1, pt2);
       elif (gonNum == 6):
          scaledPoints = [];
-         for j in range(len(vertList[i][1])):
-            scaledPoints.append(Point(vertList[i][1][j][0] * scaling, vertList[i][1][j][1] * scaling));
-         print("scaledPoints");
-         print(scaledPoints);
+         xCen = vertList[i][2] * edgeLength * 2*math.sqrt(0.75) * math.cos(11*math.pi / 6);
+         xCen += vertList[i][3] * edgeLength * 2*math.sqrt(0.75) * math.cos(1*math.pi / 6);
+         yCen = vertList[i][2] * edgeLength * 2*math.sqrt(0.75) * math.sin(11*math.pi / 6);
+         yCen += vertList[i][3] * edgeLength * 2*math.sqrt(0.75) * math.sin(1*math.pi / 6);
+         shrunkPoints = np.array(shrinkShape(xCen, yCen, edgeLength*percentWiggle));
+         for j in range(len(shrunkPoints)):
+            scaledPoints.append(Point(shrunkPoints[j][0] * scaling, shrunkPoints[j][1] * scaling));
+         #print("scaledPoints");
+         #print(scaledPoints);
          rect = Polygon(scaledPoints);
       # set color from number
       if (colorNum == 1):
@@ -564,19 +679,35 @@ def displayPlane(vertList, k, assignment, gridWidth, gridHeight, gonNum):
       rect.draw(win);
    # draw line
    line = Line(Point(0.00 * scaling, 0.05 * scaling), Point(1.0 * scaling, 0.05 * scaling));
-   line.setOutline('white');
+   line.setOutline('black');
    line.draw(win);
 
 print(sys.getrecursionlimit());
 sys.setrecursionlimit(40000);
+# format: filename edgeLength percentWiggle gonNum gridWidth gridHeight
+print(len(sys.argv));
+for i in range(len(sys.argv)):
+   print(sys.argv[i]);
+   if (i == 1):
+      edgeLength = sys.argv[i];
+   elif (i == 2):
+      percentWiggle = sys.argv[i];
+   elif (i == 3):
+      gonNum = sys.argv[i];
+   elif (i == 4):
+      gridWidth = sys.argv[i];
+      gridHeight = sys.argv[i];
+   elif (i == 5):
+      gridHeight = sys.argv[i];
 # colors
-k = 6;
+k = 4;
 # edge number, sides of the polygon
 gonNum = 6;
-edgeLength = 0.05;
+edgeLength = 0.02;
+percentWiggle = 0.85;
 #gridSize = 1;
-gridWidth = 4;
-gridHeight = 4;
+gridWidth = 6;
+gridHeight = 0.92;
 (vertList, indexMap) = generate_normal_shape(gonNum, edgeLength, gridWidth, gridHeight)
 #vertList = [];
 # list of 4 squares
@@ -587,9 +718,9 @@ gridHeight = 4;
 print("vertList");
 print(vertList);
 #graph = polyToGraph(vertList, indexMap);
-graph = polyToGraphCenReduce(vertList, indexMap, edgeLength, 0.6)
-print("graph")
-print(graph);
+graph = polyToGraphCenReduce(vertList, indexMap, edgeLength, percentWiggle)
+#print("graph")
+#print(graph);
 printCNF(graph, k);
 
 name = input("Enter to proceed ")
@@ -597,7 +728,7 @@ name = input("Enter to proceed ")
 assignment = readAssignemnt("cadicalOut.txt"); #satAssignment.txt
 print("assignment");
 print(assignment);
-displayPlane(vertList, k, assignment, gridWidth, gridHeight, gonNum);
+displayPlane(vertList, k, assignment, gridWidth, gridHeight, gonNum, edgeLength, 1);
 
 name = input("Enter to close ")
 
