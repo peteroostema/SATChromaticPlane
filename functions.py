@@ -7,6 +7,68 @@ from graphics import *
 col = 0;
 row = 0;
 
+def makeHexagonDisc(edge_length, radius, shape_list, indexMap, shapeNum, index0, index1):
+   xCord = index0 * edge_length * 2*math.sqrt(0.75) * math.cos(11*math.pi / 6);
+   xCord += index1 * edge_length * 2*math.sqrt(0.75) * math.cos(1*math.pi / 6);
+   yCord = index0 * edge_length * 2*math.sqrt(0.75) * math.sin(11*math.pi / 6);
+   yCord += index1 * edge_length * 2*math.sqrt(0.75) * math.sin(1*math.pi / 6);
+   #print("startPos");
+   #print((xCord, yCord));
+   
+   # check center in bounds
+   if (la.norm((xCord, yCord), 2) > radius):
+         return shapeNum;
+
+   for gon in shape_list:
+      if ((gon[2] == index0) and (gon[3] == index1)):
+         return shapeNum;
+   
+   pointArray = [];
+   pointArray.append((xCord - edge_length * math.cos(math.pi / 3), yCord - edge_length * math.sin(math.pi / 3)));
+   pointArray.append((xCord - edge_length, yCord));
+   pointArray.append((xCord - edge_length * math.cos(math.pi / 3), yCord + edge_length * math.sin(math.pi / 3)));
+   pointArray.append((xCord + edge_length * math.cos(math.pi / 3), yCord + edge_length * math.sin(math.pi / 3)));
+   pointArray.append((xCord + edge_length, yCord));
+   pointArray.append((xCord + edge_length * math.cos(math.pi / 3), yCord - edge_length * math.sin(math.pi / 3)));
+   # adjust verticies to bounds
+#   for i in range(len(pointArray)):
+#      #print("bf");
+#      #print(pointArray[i]);
+#      for j in range(len(pointArray[i])):
+#         if (pointArray[i][j] < 0.0):
+#            #pointArray[i][j] = 0.0;
+#            if (j == 0):
+#               pointArray[i] = (0.0, pointArray[i][j+1]);
+#            else:
+#               pointArray[i] = (pointArray[i][j-1], 0.0);
+#      if (pointArray[i][0] > plane_width):
+#         #pointArray[i][j] = plane_width;
+#         pointArray[i] = (plane_width, pointArray[i][1]);
+#      if (pointArray[i][1] > plane_height):
+#         pointArray[i] = (pointArray[i][0], plane_height);
+
+   shape_list.append([shapeNum, np.array(pointArray), index0, index1])
+   indexMap.update({(index0, index1): shapeNum});
+   shapeNum += 1;
+   shapeNum = makeHexagonDisc(edge_length, radius, shape_list, indexMap, shapeNum, index0+1, index1);
+   shapeNum = makeHexagonDisc(edge_length, radius, shape_list, indexMap, shapeNum, index0-1, index1);
+   shapeNum = makeHexagonDisc(edge_length, radius, shape_list, indexMap, shapeNum, index0, index1+1);
+   shapeNum = makeHexagonDisc(edge_length, radius, shape_list, indexMap, shapeNum, index0, index1-1);
+   return shapeNum;
+   #shapeNum += 1;
+   #return np.array(pointArray);
+
+def generate_normal_shapeDisc(num_of_edges, edge_length, radius):
+   shape_list = []
+   indexMap = {};
+   if num_of_edges == 6:
+      shapeNum = 0;
+      index0 = 0;
+      index1 = 0;
+      shapeNum = makeHexagonDisc(edge_length, radius, shape_list, indexMap, shapeNum, index0, index1);
+   return (shape_list, indexMap);
+
+
 def makeHexagon(edge_length, plane_width, plane_height, shape_list, indexMap, shapeNum, index0, index1):
    xCord = index0 * edge_length * 2*math.sqrt(0.75) * math.cos(11*math.pi / 6);
    xCord += index1 * edge_length * 2*math.sqrt(0.75) * math.cos(1*math.pi / 6);
@@ -225,7 +287,7 @@ def dfsFindCircle(cenID1, cenID2, searchID1, searchID2, edgeLength, percentWiggl
          circleIDs.append((searchID1, searchID2));
       else:
          return circleIDs;
-      
+   
    #print("searchIDs");
    #print(searchID1);
    #print(searchID2);
@@ -558,9 +620,50 @@ def printCNF(graph, k):
    #n = max(n);
    #n += 1;
    m = len(graph);
-   file.write("p cnf %d %d\n" % (n*k, n + m*k + 2)); # constrain two colors
+   file.write("p cnf %d %d\n" % (n*k, n + m*k + 2 + 3)); # constrain two colors, +3 triangle
    print("n");
    print(n);
+
+   # triangle finding
+   triEdgeIndex = 0;
+   triNodeIndex = 0;
+   triFound = 0;
+   for i in range(m):
+      foundConnections = np.zeros((n, 2), dtype=int);
+      firstNode = graph[i][0];
+      secondNode = graph[i][1];
+      firstFound = 0;
+      secondFound = 0;
+      for j in range(m):
+         if (j != firstNode and j != secondNode):
+            if (graph[j][0] == firstNode):
+               foundConnections[graph[j][1]-1, 0] = 1;
+            if (graph[j][0] == secondNode):
+               foundConnections[graph[j][1]-1, 1] = 1;
+            if (graph[j][1] == firstNode):
+               foundConnections[graph[j][0]-1, 0] = 1;
+            if (graph[j][1] == secondNode):
+               foundConnections[graph[j][0]-1, 1] = 1;
+      for j in range(n):
+         if ((foundConnections[j, 0] == 1) and (foundConnections[j, 1] == 1)):
+            print(foundConnections[j, 0]);
+            print(foundConnections[j, 1]);
+            np.set_printoptions(threshold = np.inf)
+            print(foundConnections);
+            triFound = 1;
+            triNodeIndex = j+1;
+            triEdgeIndex = i;
+            break;
+      if (triFound == 1):
+         break;
+   # constrain triangle
+   file.write("%d 0\n" % ((graph[triEdgeIndex][0] -1)*k + 1));
+   file.write("%d 0\n" % ((graph[triEdgeIndex][1] -1)*k + 2));
+   file.write("%d 0\n" % ((triNodeIndex -1)*k + 3));
+   print("triangle");
+   print(graph[triEdgeIndex]);
+   print(triNodeIndex);
+
    for i in range(n):
       mustHaveColorString = "";
       for j in range(1, k+1):
@@ -591,7 +694,7 @@ def printCNF(graph, k):
 # read from cadical output
 def readAssignemnt(satFile):
    with open(satFile) as file:
-      fileInString = file.read()
+      fileInString = file.read();
       #print(fileInString.split("\ns ",1));
       outputSecondHalf = fileInString.split("\ns ", 1)[1];
       assignmentText = outputSecondHalf.split("\nc ", 1)[0];
@@ -611,9 +714,70 @@ def readAssignemnt(satFile):
             assignment.append(int(x));
    return assignment;
 
+def displayPlaneDisc(vertList, k, assignment, radius, gonNum, edgeLength, percentWiggle):
+   basePixels = 600;
+   win = GraphWin("test", basePixels, basePixels, autoflush=False);
+   n = len(vertList);
+   scaling = basePixels/radius / 2;
+   for i in range(n):
+      # find color #
+      colorNum = 0;
+      counter = 0;
+      for j in range(i*k, (i+1)*k):
+         counter += 1;
+         if (assignment[j] > 0):
+            colorNum = counter;
+      if (gonNum == 4):
+         # make rectangle with opposite corners
+         print("points");
+         pt1 = Point(vertList[i][1][0][0] * scaling, vertList[i][1][0][1] * scaling);
+         pt2 = Point(vertList[i][1][2][0] * scaling, vertList[i][1][2][1] * scaling);
+         rect = Rectangle(pt1, pt2);
+      elif (gonNum == 6):
+         scaledPoints = [];
+         xCen = vertList[i][2] * edgeLength * 2*math.sqrt(0.75) * math.cos(11*math.pi / 6);
+         xCen += vertList[i][3] * edgeLength * 2*math.sqrt(0.75) * math.cos(1*math.pi / 6);
+         yCen = vertList[i][2] * edgeLength * 2*math.sqrt(0.75) * math.sin(11*math.pi / 6);
+         yCen += vertList[i][3] * edgeLength * 2*math.sqrt(0.75) * math.sin(1*math.pi / 6);
+         shrunkPoints = np.array(shrinkShape(xCen, yCen, edgeLength*percentWiggle));
+         for j in range(len(shrunkPoints)):
+            scaledPoints.append(Point(shrunkPoints[j][0] * scaling + basePixels/2, shrunkPoints[j][1] * scaling + basePixels/2));
+         rect = Polygon(scaledPoints);
+      # set color from number
+      if (colorNum == 1):
+         rect.setOutline('red');
+         rect.setFill('red');
+      elif (colorNum == 2):
+         rect.setOutline('blue');
+         rect.setFill('blue');
+      elif (colorNum == 3):
+         rect.setOutline('orange');
+         rect.setFill('orange');
+      elif (colorNum == 4):
+         rect.setOutline('yellow');
+         rect.setFill('yellow');
+      elif (colorNum == 5):
+         rect.setOutline('green');
+         rect.setFill('green');
+      elif (colorNum == 6):
+         rect.setOutline('cyan');
+         rect.setFill('cyan');
+      elif (colorNum == 7):
+         rect.setOutline('magenta');
+         rect.setFill('magenta');
+      else:
+         print("invalid asisngment or color");
+      rect.draw(win);
+   # draw line
+   line = Line(Point(0.00 * scaling, 0.05 * scaling), Point(1.0 * scaling, 0.05 * scaling));
+   line.setOutline('black');
+   line.draw(win);
+   win.flush();
+
+
 def displayPlane(vertList, k, assignment, gridWidth, gridHeight, gonNum, edgeLength, percentWiggle):
    basePixels = 600;
-   win = GraphWin("test", basePixels, basePixels * (gridHeight/gridWidth));
+   win = GraphWin("test", basePixels, basePixels * (gridHeight/gridWidth), autoflush=False);
    n = len(vertList);
    scaling = basePixels/gridWidth;
    for i in range(n):
@@ -681,9 +845,10 @@ def displayPlane(vertList, k, assignment, gridWidth, gridHeight, gonNum, edgeLen
    line = Line(Point(0.00 * scaling, 0.05 * scaling), Point(1.0 * scaling, 0.05 * scaling));
    line.setOutline('black');
    line.draw(win);
+   win.flush();
 
 print(sys.getrecursionlimit());
-sys.setrecursionlimit(40000);
+sys.setrecursionlimit(40000000);
 # format: filename edgeLength percentWiggle gonNum gridWidth gridHeight
 print(len(sys.argv));
 for i in range(len(sys.argv)):
@@ -699,16 +864,19 @@ for i in range(len(sys.argv)):
       gridHeight = sys.argv[i];
    elif (i == 5):
       gridHeight = sys.argv[i];
+
 # colors
-k = 4;
+k = 6;
 # edge number, sides of the polygon
 gonNum = 6;
-edgeLength = 0.02;
-percentWiggle = 0.85;
+edgeLength = 0.1;
+percentWiggle = 0.74;
 #gridSize = 1;
 gridWidth = 6;
-gridHeight = 0.92;
+gridHeight = 0.95;
 (vertList, indexMap) = generate_normal_shape(gonNum, edgeLength, gridWidth, gridHeight)
+#radius = 5;
+#(vertList, indexMap) = generate_normal_shapeDisc(gonNum, edgeLength, radius)
 #vertList = [];
 # list of 4 squares
 #vertList.append([1, np.array([(0.0, 0.0), (0.0, 1.0), (1.0, 1.0), (1.0, 0.0)])]);
@@ -729,6 +897,7 @@ assignment = readAssignemnt("cadicalOut.txt"); #satAssignment.txt
 print("assignment");
 print(assignment);
 displayPlane(vertList, k, assignment, gridWidth, gridHeight, gonNum, edgeLength, 1);
+#displayPlaneDisc(vertList, k, assignment, radius, gonNum, edgeLength, 1);
 
 name = input("Enter to close ")
 
