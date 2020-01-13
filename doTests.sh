@@ -13,14 +13,14 @@
 #cadical test9.cnf > cadOut9.txt && exit 0
 #cadical test10.cnf > cadOut10.txt && exit 0
 
-# run processes and store pids in array
-for i in $(seq 1 $1); do
-   inputFile="test${i}.cnf"
-   outputFile="cadOut${i}.txt"
-   cadical $inputFile > $outputFile &
-   #./procs[${i}] &
-   pids[${i}]=$!
-done
+## run processes and store pids in array
+#for i in $(seq 1 $1); do
+#   inputFile="test${i}.cnf"
+#   outputFile="cadOut${i}.txt"
+#   cadical $inputFile > $outputFile &
+#   #./procs[${i}] &
+#   pids[${i}]=$!
+#done
 
 ## wait for all pids
 #for pid in ${pids[*]}; do
@@ -33,11 +33,37 @@ done
 #   done
 #done
 
-# wait for any pids
-wait -n
+## wait for any pids
+#wait -n
+#for i in ${pids[*]}; do
+#   echo $i
+#   kill $i
+#   #echo ${pids[${i}]}
+#   #kill ${pids[${i}]}
+#done
+
+# bash < v4.3
+set -o monitor
+killAll(){
 for i in ${pids[*]}; do
    echo $i
    kill $i
    #echo ${pids[${i}]}
    #kill ${pids[${i}]}
 done
+}
+
+sequence=$(seq 1 $1)
+
+trap killAll SIGCHLD
+
+# run processes and store pids in array
+for i in $sequence; do
+   inputFile="test${i}.cnf"
+   outputFile="cadOut${i}.txt"
+   cadical $inputFile > $outputFile &
+   #./procs[${i}] &
+   pids[${i}]=$!
+done
+
+wait

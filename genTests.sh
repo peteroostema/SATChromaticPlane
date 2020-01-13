@@ -35,11 +35,12 @@ tail -n +2 "$FILE" > "$FILE2"
 #echo "$line\n$(cat $FILE12)" > $FILE12
 #echo "$line\n$(cat $FILE13)" > $FILE13
 
+echo $line
 # run processes and store pids in array
 for i in $(seq 1 $1); do
    echo $i
    inputFile="test${i}.cnf"
    echo $inputFile
-   gshuf $FILE2 > $inputFile
-   echo "$line\n$(cat $inputFile)" > $inputFile
+   shuf $FILE2 > $inputFile
+   printf "$line\n$(cat $inputFile)" > $inputFile
 done
