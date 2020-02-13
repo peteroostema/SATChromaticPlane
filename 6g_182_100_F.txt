@@ -1,0 +1,975 @@
+c --- [ banner ] -------------------------------------------------------------
+c 
+c CaDiCaL Radically Simplified CDCL SAT Solver
+c Copyright (c) 2016-2019 Armin Biere, JKU Linz
+c 
+c Version 1.2.1 92d72896c49b30ad2d50c8e1061ca0681cd23e60
+c g++ (GCC) 4.8.5 20150623 (Red Hat 4.8.5-36) -Wall -Wextra -O3 -DNDEBUG -std=c++0x
+c Thu Jan 9 21:33:11 EST 2020 Linux br005.pvt.bridges.psc.edu 3.10.0-957.27.2.el7.x86_64 x86_64
+c 
+c --- [ config ] -------------------------------------------------------------
+c 
+c using 'sat' configuration (target satisfiable instances)
+c 
+c --- [ limit ] --------------------------------------------------------------
+c 
+c setting time limit to 600 seconds real time
+c 
+c --- [ parsing input ] ------------------------------------------------------
+c 
+c reading DIMACS file from '/local/7676421/6g_182_100_F.cnf'
+c opening file to read '/local/7676421/6g_182_100_F.cnf'
+c found 'p cnf 341862 179955334' header
+c parsed 179955334 clauses in 61.98 seconds process time
+c closing file '/local/7676421/6g_182_100_F.cnf'
+c after reading 3117077069 bytes 2972.7 MB
+c 
+c --- [ options ] ------------------------------------------------------------
+c 
+c   --elimreleff=10                (different from default '1e3')
+c   --seed=18769                   (different from default '0')
+c   --stabilizeonly=true           (different from default 'false')
+c   --subsumereleff=60             (different from default '1e3')
+c 
+c --- [ solving ] ------------------------------------------------------------
+c 
+c time measured in process time since initialization
+c 
+c  seconds     reductions  redundant    irredundant
+c           MB     restarts       trail          variables
+c             level   conflicts       glue             remaining
+c 
+c * 61.98 13852  0 0   0    0    0  0% 0 179132767 340803 100%
+c [ 62.10 13855  0 0   0    0    0  0% 0 179132767 340803 100%
+c - 79.37 14501 348 1   0  301  271 22% 130 178940663 340803 100%
+c I 83.70 14503 331 1   0 1005  939 22% 107 178940663 340803 100%
+c - 175.98 16186 125 2   2 2853 2586 14% 40 178940663 340803 100%
+c ] 175.98 16186 125 2   2 2853 2586 14% 40 178940663 340803 100%
+c ? 175.98 16186 125 2   2 2853 2586 14% 40 178940663 340803 100%
+c 
+c --- [ result ] -------------------------------------------------------------
+c 
+c UNKNOWN
+c 
+c --- [ run-time profiling ] -------------------------------------------------
+c 
+c process time taken by individual solving procedures
+c (percentage relative to process time for solving)
+c 
+c       114.01  100.00% search
+c       113.89   99.89% stable
+c         0.12    0.11% lucky
+c         0.00    0.00% simplify
+c   =================================
+c       114.01   64.78% solve
+c 
+c last line shows process time for solving
+c (percentage relative to total process time)
+c 
+c --- [ statistics ] ---------------------------------------------------------
+c 
+c chronological:              1168        40.94 %  of conflicts
+c conflicts:                  2853        25.02    per second
+c decisions:                  6549        57.44    per second
+c fixed:                      1059         0.31 %  of all variables
+c learned:                    2767        96.99 %  per conflict
+c minimized:                  7292         0.42 %  learned literals
+c propagations:           25453049         0.22 M  per second
+c reduced:                     147         5.15 %  per conflict
+c rephased:                      1      2853.00    interval
+c restarts:                      2      1426.50    interval
+c subsumed:                     34         0.00 %  of all clauses
+c 
+c seconds are measured in process time for solving
+c 
+c --- [ resources ] ----------------------------------------------------------
+c 
+c total process time since initialization:       175.98    seconds
+c total real time since initialization:         1115.85    seconds
+c maximum resident set size of process:        17600.58    MB
+c 
+c --- [ shutting down ] ------------------------------------------------------
+c 
+c exit 0
+c --- [ banner ] -------------------------------------------------------------
+c 
+c CaDiCaL Radically Simplified CDCL SAT Solver
+c Copyright (c) 2016-2019 Armin Biere, JKU Linz
+c 
+c Version 1.2.1 92d72896c49b30ad2d50c8e1061ca0681cd23e60
+c g++ (GCC) 4.8.5 20150623 (Red Hat 4.8.5-36) -Wall -Wextra -O3 -DNDEBUG -std=c++0x
+c Thu Jan 9 21:33:11 EST 2020 Linux br005.pvt.bridges.psc.edu 3.10.0-957.27.2.el7.x86_64 x86_64
+c 
+c --- [ config ] -------------------------------------------------------------
+c 
+c using 'sat' configuration (target satisfiable instances)
+c 
+c --- [ limit ] --------------------------------------------------------------
+c 
+c setting time limit to 600 seconds real time
+c 
+c --- [ parsing input ] ------------------------------------------------------
+c 
+c reading DIMACS file from '/local/7676421/6g_182_100_F.cnf'
+c opening file to read '/local/7676421/6g_182_100_F.cnf'
+c found 'p cnf 341862 179955334' header
+c parsed 179955334 clauses in 61.94 seconds process time
+c closing file '/local/7676421/6g_182_100_F.cnf'
+c after reading 3117077069 bytes 2972.7 MB
+c 
+c --- [ options ] ------------------------------------------------------------
+c 
+c   --elimreleff=10                (different from default '1e3')
+c   --seed=29459                   (different from default '0')
+c   --stabilizeonly=true           (different from default 'false')
+c   --subsumereleff=60             (different from default '1e3')
+c 
+c --- [ solving ] ------------------------------------------------------------
+c 
+c time measured in process time since initialization
+c 
+c  seconds     reductions  redundant    irredundant
+c           MB     restarts       trail          variables
+c             level   conflicts       glue             remaining
+c 
+c * 61.94 13852  0 0   0    0    0  0% 0 179132767 340803 100%
+c [ 62.06 13855  0 0   0    0    0  0% 0 179132767 340803 100%
+c - 79.16 14500 348 1   0  301  271 22% 130 178940663 340803 100%
+c I 83.58 14502 331 1   0 1005  939 22% 107 178940663 340803 100%
+c - 175.90 16172 125 2   2 2853 2586 14% 40 178940663 340803 100%
+c ] 175.90 16172 125 2   2 2853 2586 14% 40 178940663 340803 100%
+c ? 175.90 16172 125 2   2 2853 2586 14% 40 178940663 340803 100%
+c 
+c --- [ result ] -------------------------------------------------------------
+c 
+c UNKNOWN
+c 
+c --- [ run-time profiling ] -------------------------------------------------
+c 
+c process time taken by individual solving procedures
+c (percentage relative to process time for solving)
+c 
+c       113.96  100.00% search
+c       113.84   99.89% stable
+c         0.12    0.11% lucky
+c         0.00    0.00% simplify
+c   =================================
+c       113.96   64.79% solve
+c 
+c last line shows process time for solving
+c (percentage relative to total process time)
+c 
+c --- [ statistics ] ---------------------------------------------------------
+c 
+c chronological:              1168        40.94 %  of conflicts
+c conflicts:                  2853        25.03    per second
+c decisions:                  6549        57.47    per second
+c fixed:                      1059         0.31 %  of all variables
+c learned:                    2767        96.99 %  per conflict
+c minimized:                  7292         0.42 %  learned literals
+c propagations:           25453049         0.22 M  per second
+c reduced:                     147         5.15 %  per conflict
+c rephased:                      1      2853.00    interval
+c restarts:                      2      1426.50    interval
+c subsumed:                     34         0.00 %  of all clauses
+c 
+c seconds are measured in process time for solving
+c 
+c --- [ resources ] ----------------------------------------------------------
+c 
+c total process time since initialization:       175.90    seconds
+c total real time since initialization:         1357.76    seconds
+c maximum resident set size of process:        17601.21    MB
+c 
+c --- [ shutting down ] ------------------------------------------------------
+c 
+c exit 0
+c --- [ banner ] -------------------------------------------------------------
+c 
+c CaDiCaL Radically Simplified CDCL SAT Solver
+c Copyright (c) 2016-2019 Armin Biere, JKU Linz
+c 
+c Version 1.2.1 92d72896c49b30ad2d50c8e1061ca0681cd23e60
+c g++ (GCC) 4.8.5 20150623 (Red Hat 4.8.5-36) -Wall -Wextra -O3 -DNDEBUG -std=c++0x
+c Thu Jan 9 21:33:11 EST 2020 Linux br005.pvt.bridges.psc.edu 3.10.0-957.27.2.el7.x86_64 x86_64
+c 
+c --- [ config ] -------------------------------------------------------------
+c 
+c using 'sat' configuration (target satisfiable instances)
+c 
+c --- [ limit ] --------------------------------------------------------------
+c 
+c setting time limit to 600 seconds real time
+c 
+c --- [ parsing input ] ------------------------------------------------------
+c 
+c reading DIMACS file from '/local/7676421/6g_182_100_F.cnf'
+c opening file to read '/local/7676421/6g_182_100_F.cnf'
+c found 'p cnf 341862 179955334' header
+c parsed 179955334 clauses in 63.40 seconds process time
+c closing file '/local/7676421/6g_182_100_F.cnf'
+c after reading 3117077069 bytes 2972.7 MB
+c 
+c --- [ options ] ------------------------------------------------------------
+c 
+c   --elimreleff=10                (different from default '1e3')
+c   --seed=31833                   (different from default '0')
+c   --stabilizeonly=true           (different from default 'false')
+c   --subsumereleff=60             (different from default '1e3')
+c 
+c --- [ solving ] ------------------------------------------------------------
+c 
+c time measured in process time since initialization
+c 
+c  seconds     reductions  redundant    irredundant
+c           MB     restarts       trail          variables
+c             level   conflicts       glue             remaining
+c 
+c * 63.40 13856  0 0   0    0    0  0% 0 179132767 340803 100%
+c [ 63.52 13858  0 0   0    0    0  0% 0 179132767 340803 100%
+c - 80.85 14503 348 1   0  301  271 22% 130 178940663 340803 100%
+c I 85.58 14505 331 1   0 1005  939 22% 107 178940663 340803 100%
+c - 189.05 16221 125 2   2 2853 2586 14% 40 178940663 340803 100%
+c ] 189.05 16221 125 2   2 2853 2586 14% 40 178940663 340803 100%
+c ? 189.05 16221 125 2   2 2853 2586 14% 40 178940663 340803 100%
+c 
+c --- [ result ] -------------------------------------------------------------
+c 
+c UNKNOWN
+c 
+c --- [ run-time profiling ] -------------------------------------------------
+c 
+c process time taken by individual solving procedures
+c (percentage relative to process time for solving)
+c 
+c       125.65  100.00% search
+c       125.53   99.90% stable
+c         0.12    0.10% lucky
+c         0.00    0.00% simplify
+c   =================================
+c       125.65   66.46% solve
+c 
+c last line shows process time for solving
+c (percentage relative to total process time)
+c 
+c --- [ statistics ] ---------------------------------------------------------
+c 
+c chronological:              1168        40.94 %  of conflicts
+c conflicts:                  2853        22.71    per second
+c decisions:                  6549        52.12    per second
+c fixed:                      1059         0.31 %  of all variables
+c learned:                    2767        96.99 %  per conflict
+c minimized:                  7292         0.42 %  learned literals
+c propagations:           25453049         0.20 M  per second
+c reduced:                     147         5.15 %  per conflict
+c rephased:                      1      2853.00    interval
+c restarts:                      2      1426.50    interval
+c subsumed:                     34         0.00 %  of all clauses
+c 
+c seconds are measured in process time for solving
+c 
+c --- [ resources ] ----------------------------------------------------------
+c 
+c total process time since initialization:       189.06    seconds
+c total real time since initialization:         1517.77    seconds
+c maximum resident set size of process:        17601.39    MB
+c 
+c --- [ shutting down ] ------------------------------------------------------
+c 
+c exit 0
+c --- [ banner ] -------------------------------------------------------------
+c 
+c CaDiCaL Radically Simplified CDCL SAT Solver
+c Copyright (c) 2016-2019 Armin Biere, JKU Linz
+c 
+c Version 1.2.1 92d72896c49b30ad2d50c8e1061ca0681cd23e60
+c g++ (GCC) 4.8.5 20150623 (Red Hat 4.8.5-36) -Wall -Wextra -O3 -DNDEBUG -std=c++0x
+c Thu Jan 9 21:33:11 EST 2020 Linux br005.pvt.bridges.psc.edu 3.10.0-957.27.2.el7.x86_64 x86_64
+c 
+c --- [ config ] -------------------------------------------------------------
+c 
+c using 'sat' configuration (target satisfiable instances)
+c 
+c --- [ limit ] --------------------------------------------------------------
+c 
+c setting time limit to 600 seconds real time
+c 
+c --- [ parsing input ] ------------------------------------------------------
+c 
+c reading DIMACS file from '/local/7676421/6g_182_100_F.cnf'
+c opening file to read '/local/7676421/6g_182_100_F.cnf'
+c found 'p cnf 341862 179955334' header
+c parsed 179955334 clauses in 64.44 seconds process time
+c closing file '/local/7676421/6g_182_100_F.cnf'
+c after reading 3117077069 bytes 2972.7 MB
+c 
+c --- [ options ] ------------------------------------------------------------
+c 
+c   --elimreleff=10                (different from default '1e3')
+c   --seed=23671                   (different from default '0')
+c   --stabilizeonly=true           (different from default 'false')
+c   --subsumereleff=60             (different from default '1e3')
+c 
+c --- [ solving ] ------------------------------------------------------------
+c 
+c time measured in process time since initialization
+c 
+c  seconds     reductions  redundant    irredundant
+c           MB     restarts       trail          variables
+c             level   conflicts       glue             remaining
+c 
+c * 64.44 13858  0 0   0    0    0  0% 0 179132767 340803 100%
+c [ 64.57 13860  0 0   0    0    0  0% 0 179132767 340803 100%
+c - 83.08 14507 348 1   0  301  271 22% 130 178940663 340803 100%
+c I 88.05 14510 331 1   0 1005  939 22% 107 178940663 340803 100%
+c - 176.42 16232 125 2   2 2853 2586 14% 40 178940663 340803 100%
+c ] 176.42 16232 125 2   2 2853 2586 14% 40 178940663 340803 100%
+c ? 176.42 16232 125 2   2 2853 2586 14% 40 178940663 340803 100%
+c 
+c --- [ result ] -------------------------------------------------------------
+c 
+c UNKNOWN
+c 
+c --- [ run-time profiling ] -------------------------------------------------
+c 
+c process time taken by individual solving procedures
+c (percentage relative to process time for solving)
+c 
+c       111.98  100.00% search
+c       111.85   99.89% stable
+c         0.13    0.11% lucky
+c         0.00    0.00% simplify
+c   =================================
+c       111.98   63.47% solve
+c 
+c last line shows process time for solving
+c (percentage relative to total process time)
+c 
+c --- [ statistics ] ---------------------------------------------------------
+c 
+c chronological:              1168        40.94 %  of conflicts
+c conflicts:                  2853        25.48    per second
+c decisions:                  6549        58.48    per second
+c fixed:                      1059         0.31 %  of all variables
+c learned:                    2767        96.99 %  per conflict
+c minimized:                  7292         0.42 %  learned literals
+c propagations:           25453049         0.23 M  per second
+c reduced:                     147         5.15 %  per conflict
+c rephased:                      1      2853.00    interval
+c restarts:                      2      1426.50    interval
+c subsumed:                     34         0.00 %  of all clauses
+c 
+c seconds are measured in process time for solving
+c 
+c --- [ resources ] ----------------------------------------------------------
+c 
+c total process time since initialization:       176.42    seconds
+c total real time since initialization:          802.65    seconds
+c maximum resident set size of process:        17601.23    MB
+c 
+c --- [ shutting down ] ------------------------------------------------------
+c 
+c exit 0
+c --- [ banner ] -------------------------------------------------------------
+c 
+c CaDiCaL Radically Simplified CDCL SAT Solver
+c Copyright (c) 2016-2019 Armin Biere, JKU Linz
+c 
+c Version 1.2.1 92d72896c49b30ad2d50c8e1061ca0681cd23e60
+c g++ (GCC) 4.8.5 20150623 (Red Hat 4.8.5-36) -Wall -Wextra -O3 -DNDEBUG -std=c++0x
+c Thu Jan 9 21:33:11 EST 2020 Linux br005.pvt.bridges.psc.edu 3.10.0-957.27.2.el7.x86_64 x86_64
+c 
+c --- [ config ] -------------------------------------------------------------
+c 
+c using 'sat' configuration (target satisfiable instances)
+c 
+c --- [ limit ] --------------------------------------------------------------
+c 
+c setting time limit to 600 seconds real time
+c 
+c --- [ parsing input ] ------------------------------------------------------
+c 
+c reading DIMACS file from '/local/7676421/6g_182_100_F.cnf'
+c opening file to read '/local/7676421/6g_182_100_F.cnf'
+c found 'p cnf 341862 179955334' header
+c parsed 179955334 clauses in 63.19 seconds process time
+c closing file '/local/7676421/6g_182_100_F.cnf'
+c after reading 3117077069 bytes 2972.7 MB
+c 
+c --- [ options ] ------------------------------------------------------------
+c 
+c   --elimreleff=10                (different from default '1e3')
+c   --seed=10871                   (different from default '0')
+c   --stabilizeonly=true           (different from default 'false')
+c   --subsumereleff=60             (different from default '1e3')
+c 
+c --- [ solving ] ------------------------------------------------------------
+c 
+c time measured in process time since initialization
+c 
+c  seconds     reductions  redundant    irredundant
+c           MB     restarts       trail          variables
+c             level   conflicts       glue             remaining
+c 
+c * 63.19 13858  0 0   0    0    0  0% 0 179132767 340803 100%
+c [ 63.32 13860  0 0   0    0    0  0% 0 179132767 340803 100%
+c - 81.34 14507 348 1   0  301  271 22% 130 178940663 340803 100%
+c I 86.08 14508 331 1   0 1005  939 22% 107 178940663 340803 100%
+c - 182.16 16229 125 2   2 2853 2586 14% 40 178940663 340803 100%
+c ] 182.16 16229 125 2   2 2853 2586 14% 40 178940663 340803 100%
+c ? 182.16 16229 125 2   2 2853 2586 14% 40 178940663 340803 100%
+c 
+c --- [ result ] -------------------------------------------------------------
+c 
+c UNKNOWN
+c 
+c --- [ run-time profiling ] -------------------------------------------------
+c 
+c process time taken by individual solving procedures
+c (percentage relative to process time for solving)
+c 
+c       118.96  100.00% search
+c       118.84   99.89% stable
+c         0.13    0.11% lucky
+c         0.00    0.00% simplify
+c   =================================
+c       118.96   65.31% solve
+c 
+c last line shows process time for solving
+c (percentage relative to total process time)
+c 
+c --- [ statistics ] ---------------------------------------------------------
+c 
+c chronological:              1168        40.94 %  of conflicts
+c conflicts:                  2853        23.98    per second
+c decisions:                  6549        55.05    per second
+c fixed:                      1059         0.31 %  of all variables
+c learned:                    2767        96.99 %  per conflict
+c minimized:                  7292         0.42 %  learned literals
+c propagations:           25453049         0.21 M  per second
+c reduced:                     147         5.15 %  per conflict
+c rephased:                      1      2853.00    interval
+c restarts:                      2      1426.50    interval
+c subsumed:                     34         0.00 %  of all clauses
+c 
+c seconds are measured in process time for solving
+c 
+c --- [ resources ] ----------------------------------------------------------
+c 
+c total process time since initialization:       182.16    seconds
+c total real time since initialization:         1223.27    seconds
+c maximum resident set size of process:        17601.36    MB
+c 
+c --- [ shutting down ] ------------------------------------------------------
+c 
+c exit 0
+c --- [ banner ] -------------------------------------------------------------
+c 
+c CaDiCaL Radically Simplified CDCL SAT Solver
+c Copyright (c) 2016-2019 Armin Biere, JKU Linz
+c 
+c Version 1.2.1 92d72896c49b30ad2d50c8e1061ca0681cd23e60
+c g++ (GCC) 4.8.5 20150623 (Red Hat 4.8.5-36) -Wall -Wextra -O3 -DNDEBUG -std=c++0x
+c Thu Jan 9 21:33:11 EST 2020 Linux br005.pvt.bridges.psc.edu 3.10.0-957.27.2.el7.x86_64 x86_64
+c 
+c --- [ config ] -------------------------------------------------------------
+c 
+c using 'sat' configuration (target satisfiable instances)
+c 
+c --- [ limit ] --------------------------------------------------------------
+c 
+c setting time limit to 600 seconds real time
+c 
+c --- [ parsing input ] ------------------------------------------------------
+c 
+c reading DIMACS file from '/local/7676421/6g_182_100_F.cnf'
+c opening file to read '/local/7676421/6g_182_100_F.cnf'
+c found 'p cnf 341862 179955334' header
+c parsed 179955334 clauses in 62.90 seconds process time
+c closing file '/local/7676421/6g_182_100_F.cnf'
+c after reading 3117077069 bytes 2972.7 MB
+c 
+c --- [ options ] ------------------------------------------------------------
+c 
+c   --elimreleff=10                (different from default '1e3')
+c   --seed=6365                    (different from default '0')
+c   --stabilizeonly=true           (different from default 'false')
+c   --subsumereleff=60             (different from default '1e3')
+c 
+c --- [ solving ] ------------------------------------------------------------
+c 
+c time measured in process time since initialization
+c 
+c  seconds     reductions  redundant    irredundant
+c           MB     restarts       trail          variables
+c             level   conflicts       glue             remaining
+c 
+c * 62.90 13859  0 0   0    0    0  0% 0 179132767 340803 100%
+c [ 63.02 13862  0 0   0    0    0  0% 0 179132767 340803 100%
+c - 80.17 14508 348 1   0  301  271 22% 130 178940663 340803 100%
+c I 84.71 14511 331 1   0 1005  939 22% 107 178940663 340803 100%
+c - 174.46 16178 125 2   2 2853 2586 14% 40 178940663 340803 100%
+c ] 174.46 16178 125 2   2 2853 2586 14% 40 178940663 340803 100%
+c ? 174.46 16178 125 2   2 2853 2586 14% 40 178940663 340803 100%
+c 
+c --- [ result ] -------------------------------------------------------------
+c 
+c UNKNOWN
+c 
+c --- [ run-time profiling ] -------------------------------------------------
+c 
+c process time taken by individual solving procedures
+c (percentage relative to process time for solving)
+c 
+c       111.56  100.00% search
+c       111.44   99.89% stable
+c         0.12    0.11% lucky
+c         0.00    0.00% simplify
+c   =================================
+c       111.56   63.95% solve
+c 
+c last line shows process time for solving
+c (percentage relative to total process time)
+c 
+c --- [ statistics ] ---------------------------------------------------------
+c 
+c chronological:              1168        40.94 %  of conflicts
+c conflicts:                  2853        25.57    per second
+c decisions:                  6549        58.70    per second
+c fixed:                      1059         0.31 %  of all variables
+c learned:                    2767        96.99 %  per conflict
+c minimized:                  7292         0.42 %  learned literals
+c propagations:           25453049         0.23 M  per second
+c reduced:                     147         5.15 %  per conflict
+c rephased:                      1      2853.00    interval
+c restarts:                      2      1426.50    interval
+c subsumed:                     34         0.00 %  of all clauses
+c 
+c seconds are measured in process time for solving
+c 
+c --- [ resources ] ----------------------------------------------------------
+c 
+c total process time since initialization:       174.46    seconds
+c total real time since initialization:          913.49    seconds
+c maximum resident set size of process:        17601.22    MB
+c 
+c --- [ shutting down ] ------------------------------------------------------
+c 
+c exit 0
+c --- [ banner ] -------------------------------------------------------------
+c 
+c CaDiCaL Radically Simplified CDCL SAT Solver
+c Copyright (c) 2016-2019 Armin Biere, JKU Linz
+c 
+c Version 1.2.1 92d72896c49b30ad2d50c8e1061ca0681cd23e60
+c g++ (GCC) 4.8.5 20150623 (Red Hat 4.8.5-36) -Wall -Wextra -O3 -DNDEBUG -std=c++0x
+c Thu Jan 9 21:33:11 EST 2020 Linux br005.pvt.bridges.psc.edu 3.10.0-957.27.2.el7.x86_64 x86_64
+c 
+c --- [ config ] -------------------------------------------------------------
+c 
+c using 'sat' configuration (target satisfiable instances)
+c 
+c --- [ limit ] --------------------------------------------------------------
+c 
+c setting time limit to 600 seconds real time
+c 
+c --- [ parsing input ] ------------------------------------------------------
+c 
+c reading DIMACS file from '/local/7676421/6g_182_100_F.cnf'
+c opening file to read '/local/7676421/6g_182_100_F.cnf'
+c found 'p cnf 341862 179955334' header
+c parsed 179955334 clauses in 61.65 seconds process time
+c closing file '/local/7676421/6g_182_100_F.cnf'
+c after reading 3117077069 bytes 2972.7 MB
+c 
+c --- [ options ] ------------------------------------------------------------
+c 
+c   --elimreleff=10                (different from default '1e3')
+c   --seed=1489                    (different from default '0')
+c   --stabilizeonly=true           (different from default 'false')
+c   --subsumereleff=60             (different from default '1e3')
+c 
+c --- [ solving ] ------------------------------------------------------------
+c 
+c time measured in process time since initialization
+c 
+c  seconds     reductions  redundant    irredundant
+c           MB     restarts       trail          variables
+c             level   conflicts       glue             remaining
+c 
+c * 61.65 13856  0 0   0    0    0  0% 0 179132767 340803 100%
+c [ 61.87 13859  0 0   0    0    0  0% 0 179132767 340803 100%
+c - 79.58 14505 348 1   0  301  271 22% 130 178940663 340803 100%
+c I 83.49 14508 331 1   0 1005  939 22% 107 178940663 340803 100%
+c - 176.34 16236 125 2   2 2853 2586 14% 40 178940663 340803 100%
+c ] 176.34 16237 125 2   2 2853 2586 14% 40 178940663 340803 100%
+c ? 176.34 16237 125 2   2 2853 2586 14% 40 178940663 340803 100%
+c 
+c --- [ result ] -------------------------------------------------------------
+c 
+c UNKNOWN
+c 
+c --- [ run-time profiling ] -------------------------------------------------
+c 
+c process time taken by individual solving procedures
+c (percentage relative to process time for solving)
+c 
+c       114.69  100.00% search
+c       114.47   99.81% stable
+c         0.21    0.19% lucky
+c         0.00    0.00% simplify
+c   =================================
+c       114.69   65.04% solve
+c 
+c last line shows process time for solving
+c (percentage relative to total process time)
+c 
+c --- [ statistics ] ---------------------------------------------------------
+c 
+c chronological:              1168        40.94 %  of conflicts
+c conflicts:                  2853        24.88    per second
+c decisions:                  6549        57.10    per second
+c fixed:                      1059         0.31 %  of all variables
+c learned:                    2767        96.99 %  per conflict
+c minimized:                  7292         0.42 %  learned literals
+c propagations:           25453049         0.22 M  per second
+c reduced:                     147         5.15 %  per conflict
+c rephased:                      1      2853.00    interval
+c restarts:                      2      1426.50    interval
+c subsumed:                     34         0.00 %  of all clauses
+c 
+c seconds are measured in process time for solving
+c 
+c --- [ resources ] ----------------------------------------------------------
+c 
+c total process time since initialization:       176.34    seconds
+c total real time since initialization:         1354.33    seconds
+c maximum resident set size of process:        17601.41    MB
+c 
+c --- [ shutting down ] ------------------------------------------------------
+c 
+c exit 0
+c --- [ banner ] -------------------------------------------------------------
+c 
+c CaDiCaL Radically Simplified CDCL SAT Solver
+c Copyright (c) 2016-2019 Armin Biere, JKU Linz
+c 
+c Version 1.2.1 92d72896c49b30ad2d50c8e1061ca0681cd23e60
+c g++ (GCC) 4.8.5 20150623 (Red Hat 4.8.5-36) -Wall -Wextra -O3 -DNDEBUG -std=c++0x
+c Thu Jan 9 21:33:11 EST 2020 Linux br005.pvt.bridges.psc.edu 3.10.0-957.27.2.el7.x86_64 x86_64
+c 
+c --- [ config ] -------------------------------------------------------------
+c 
+c using 'sat' configuration (target satisfiable instances)
+c 
+c --- [ limit ] --------------------------------------------------------------
+c 
+c setting time limit to 600 seconds real time
+c 
+c --- [ parsing input ] ------------------------------------------------------
+c 
+c reading DIMACS file from '/local/7676421/6g_182_100_F.cnf'
+c opening file to read '/local/7676421/6g_182_100_F.cnf'
+c found 'p cnf 341862 179955334' header
+c parsed 179955334 clauses in 64.31 seconds process time
+c closing file '/local/7676421/6g_182_100_F.cnf'
+c after reading 3117077069 bytes 2972.7 MB
+c 
+c --- [ options ] ------------------------------------------------------------
+c 
+c   --elimreleff=10                (different from default '1e3')
+c   --seed=3661                    (different from default '0')
+c   --stabilizeonly=true           (different from default 'false')
+c   --subsumereleff=60             (different from default '1e3')
+c 
+c --- [ solving ] ------------------------------------------------------------
+c 
+c time measured in process time since initialization
+c 
+c  seconds     reductions  redundant    irredundant
+c           MB     restarts       trail          variables
+c             level   conflicts       glue             remaining
+c 
+c * 64.31 13854  0 0   0    0    0  0% 0 179132767 340803 100%
+c [ 64.44 13856  0 0   0    0    0  0% 0 179132767 340803 100%
+c - 82.05 14503 348 1   0  301  271 22% 130 178940663 340803 100%
+c I 86.79 14505 331 1   0 1005  939 22% 107 178940663 340803 100%
+c - 186.22 16187 125 2   2 2853 2586 14% 40 178940663 340803 100%
+c ] 186.22 16187 125 2   2 2853 2586 14% 40 178940663 340803 100%
+c ? 186.22 16187 125 2   2 2853 2586 14% 40 178940663 340803 100%
+c 
+c --- [ result ] -------------------------------------------------------------
+c 
+c UNKNOWN
+c 
+c --- [ run-time profiling ] -------------------------------------------------
+c 
+c process time taken by individual solving procedures
+c (percentage relative to process time for solving)
+c 
+c       121.91  100.00% search
+c       121.78   99.90% stable
+c         0.13    0.10% lucky
+c         0.00    0.00% simplify
+c   =================================
+c       121.91   65.46% solve
+c 
+c last line shows process time for solving
+c (percentage relative to total process time)
+c 
+c --- [ statistics ] ---------------------------------------------------------
+c 
+c chronological:              1168        40.94 %  of conflicts
+c conflicts:                  2853        23.40    per second
+c decisions:                  6549        53.72    per second
+c fixed:                      1059         0.31 %  of all variables
+c learned:                    2767        96.99 %  per conflict
+c minimized:                  7292         0.42 %  learned literals
+c propagations:           25453049         0.21 M  per second
+c reduced:                     147         5.15 %  per conflict
+c rephased:                      1      2853.00    interval
+c restarts:                      2      1426.50    interval
+c subsumed:                     34         0.00 %  of all clauses
+c 
+c seconds are measured in process time for solving
+c 
+c --- [ resources ] ----------------------------------------------------------
+c 
+c total process time since initialization:       186.22    seconds
+c total real time since initialization:         1685.12    seconds
+c maximum resident set size of process:        17601.38    MB
+c 
+c --- [ shutting down ] ------------------------------------------------------
+c 
+c exit 0
+c --- [ banner ] -------------------------------------------------------------
+c 
+c CaDiCaL Radically Simplified CDCL SAT Solver
+c Copyright (c) 2016-2019 Armin Biere, JKU Linz
+c 
+c Version 1.2.1 92d72896c49b30ad2d50c8e1061ca0681cd23e60
+c g++ (GCC) 4.8.5 20150623 (Red Hat 4.8.5-36) -Wall -Wextra -O3 -DNDEBUG -std=c++0x
+c Thu Jan 9 21:33:11 EST 2020 Linux br005.pvt.bridges.psc.edu 3.10.0-957.27.2.el7.x86_64 x86_64
+c 
+c --- [ config ] -------------------------------------------------------------
+c 
+c using 'sat' configuration (target satisfiable instances)
+c 
+c --- [ limit ] --------------------------------------------------------------
+c 
+c setting time limit to 600 seconds real time
+c 
+c --- [ parsing input ] ------------------------------------------------------
+c 
+c reading DIMACS file from '/local/7676421/6g_182_100_F.cnf'
+c opening file to read '/local/7676421/6g_182_100_F.cnf'
+c found 'p cnf 341862 179955334' header
+c parsed 179955334 clauses in 57.11 seconds process time
+c closing file '/local/7676421/6g_182_100_F.cnf'
+c after reading 3117077069 bytes 2972.7 MB
+c 
+c --- [ options ] ------------------------------------------------------------
+c 
+c   --elimreleff=10                (different from default '1e3')
+c   --seed=7832                    (different from default '0')
+c   --stabilizeonly=true           (different from default 'false')
+c   --subsumereleff=60             (different from default '1e3')
+c 
+c --- [ solving ] ------------------------------------------------------------
+c 
+c time measured in process time since initialization
+c 
+c  seconds     reductions  redundant    irredundant
+c           MB     restarts       trail          variables
+c             level   conflicts       glue             remaining
+c 
+c * 57.11 13861  0 0   0    0    0  0% 0 179132767 340803 100%
+c [ 57.23 13864  0 0   0    0    0  0% 0 179132767 340803 100%
+c - 72.71 14510 348 1   0  301  271 22% 130 178940663 340803 100%
+c I 76.83 14513 331 1   0 1005  939 22% 107 178940663 340803 100%
+c - 182.26 16219 125 2   2 2853 2586 14% 40 178940663 340803 100%
+c ] 182.26 16219 125 2   2 2853 2586 14% 40 178940663 340803 100%
+c ? 182.26 16219 125 2   2 2853 2586 14% 40 178940663 340803 100%
+c 
+c --- [ result ] -------------------------------------------------------------
+c 
+c UNKNOWN
+c 
+c --- [ run-time profiling ] -------------------------------------------------
+c 
+c process time taken by individual solving procedures
+c (percentage relative to process time for solving)
+c 
+c       125.15  100.00% search
+c       125.03   99.91% stable
+c         0.11    0.09% lucky
+c         0.00    0.00% simplify
+c   =================================
+c       125.15   68.66% solve
+c 
+c last line shows process time for solving
+c (percentage relative to total process time)
+c 
+c --- [ statistics ] ---------------------------------------------------------
+c 
+c chronological:              1168        40.94 %  of conflicts
+c conflicts:                  2853        22.80    per second
+c decisions:                  6549        52.33    per second
+c fixed:                      1059         0.31 %  of all variables
+c learned:                    2767        96.99 %  per conflict
+c minimized:                  7292         0.42 %  learned literals
+c propagations:           25453049         0.20 M  per second
+c reduced:                     147         5.15 %  per conflict
+c rephased:                      1      2853.00    interval
+c restarts:                      2      1426.50    interval
+c subsumed:                     34         0.00 %  of all clauses
+c 
+c seconds are measured in process time for solving
+c 
+c --- [ resources ] ----------------------------------------------------------
+c 
+c total process time since initialization:       182.26    seconds
+c total real time since initialization:         1787.65    seconds
+c maximum resident set size of process:        17601.35    MB
+c 
+c --- [ shutting down ] ------------------------------------------------------
+c 
+c exit 0
+c --- [ banner ] -------------------------------------------------------------
+c 
+c CaDiCaL Radically Simplified CDCL SAT Solver
+c Copyright (c) 2016-2019 Armin Biere, JKU Linz
+c 
+c Version 1.2.1 92d72896c49b30ad2d50c8e1061ca0681cd23e60
+c g++ (GCC) 4.8.5 20150623 (Red Hat 4.8.5-36) -Wall -Wextra -O3 -DNDEBUG -std=c++0x
+c Thu Jan 9 21:33:11 EST 2020 Linux br005.pvt.bridges.psc.edu 3.10.0-957.27.2.el7.x86_64 x86_64
+c 
+c --- [ config ] -------------------------------------------------------------
+c 
+c using 'sat' configuration (target satisfiable instances)
+c 
+c --- [ limit ] --------------------------------------------------------------
+c 
+c setting time limit to 600 seconds real time
+c 
+c --- [ parsing input ] ------------------------------------------------------
+c 
+c reading DIMACS file from '/local/7676421/6g_182_100_F.cnf'
+c opening file to read '/local/7676421/6g_182_100_F.cnf'
+c found 'p cnf 341862 179955334' header
+c parsed 179955334 clauses in 56.84 seconds process time
+c closing file '/local/7676421/6g_182_100_F.cnf'
+c after reading 3117077069 bytes 2972.7 MB
+c 
+c --- [ options ] ------------------------------------------------------------
+c 
+c   --elimreleff=10                (different from default '1e3')
+c   --seed=10150                   (different from default '0')
+c   --stabilizeonly=true           (different from default 'false')
+c   --subsumereleff=60             (different from default '1e3')
+c 
+c --- [ solving ] ------------------------------------------------------------
+c 
+c time measured in process time since initialization
+c 
+c  seconds     reductions  redundant    irredundant
+c           MB     restarts       trail          variables
+c             level   conflicts       glue             remaining
+c 
+c * 56.84 13859  0 0   0    0    0  0% 0 179132767 340803 100%
+c [ 56.95 13862  0 0   0    0    0  0% 0 179132767 340803 100%
+c - 72.39 14508 348 1   0  301  271 22% 130 178940663 340803 100%
+c I 76.52 14511 331 1   0 1005  939 22% 107 178940663 340803 100%
+c - 187.21 16141 125 2   2 2853 2586 14% 40 178940663 340803 100%
+c ] 187.21 16141 125 2   2 2853 2586 14% 40 178940663 340803 100%
+c ? 187.21 16141 125 2   2 2853 2586 14% 40 178940663 340803 100%
+c 
+c --- [ result ] -------------------------------------------------------------
+c 
+c UNKNOWN
+c 
+c --- [ run-time profiling ] -------------------------------------------------
+c 
+c process time taken by individual solving procedures
+c (percentage relative to process time for solving)
+c 
+c       130.37  100.00% search
+c       130.26   99.91% stable
+c         0.11    0.09% lucky
+c         0.00    0.00% simplify
+c   =================================
+c       130.37   69.64% solve
+c 
+c last line shows process time for solving
+c (percentage relative to total process time)
+c 
+c --- [ statistics ] ---------------------------------------------------------
+c 
+c chronological:              1168        40.94 %  of conflicts
+c conflicts:                  2853        21.88    per second
+c decisions:                  6549        50.23    per second
+c fixed:                      1059         0.31 %  of all variables
+c learned:                    2767        96.99 %  per conflict
+c minimized:                  7292         0.42 %  learned literals
+c propagations:           25453049         0.20 M  per second
+c reduced:                     147         5.15 %  per conflict
+c rephased:                      1      2853.00    interval
+c restarts:                      2      1426.50    interval
+c subsumed:                     34         0.00 %  of all clauses
+c 
+c seconds are measured in process time for solving
+c 
+c --- [ resources ] ----------------------------------------------------------
+c 
+c total process time since initialization:       187.21    seconds
+c total real time since initialization:         1900.17    seconds
+c maximum resident set size of process:        17601.34    MB
+c 
+c --- [ shutting down ] ------------------------------------------------------
+c 
+c exit 0
+c --- [ banner ] -------------------------------------------------------------
+c 
+c CaDiCaL Radically Simplified CDCL SAT Solver
+c Copyright (c) 2016-2019 Armin Biere, JKU Linz
+c 
+c Version 1.2.1 92d72896c49b30ad2d50c8e1061ca0681cd23e60
+c g++ (GCC) 4.8.5 20150623 (Red Hat 4.8.5-36) -Wall -Wextra -O3 -DNDEBUG -std=c++0x
+c Thu Jan 9 21:33:11 EST 2020 Linux br005.pvt.bridges.psc.edu 3.10.0-957.27.2.el7.x86_64 x86_64
+c 
+c --- [ config ] -------------------------------------------------------------
+c 
+c using 'sat' configuration (target satisfiable instances)
+c 
+c --- [ limit ] --------------------------------------------------------------
+c 
+c setting time limit to 600 seconds real time
+c 
+c --- [ parsing input ] ------------------------------------------------------
+c 
+c reading DIMACS file from '/local/7676421/6g_182_100_F.cnf'
+c opening file to read '/local/7676421/6g_182_100_F.cnf'
+c found 'p cnf 341862 179955334' header
+c parsed 179955334 clauses in 56.66 seconds process time
+c closing file '/local/7676421/6g_182_100_F.cnf'
+c after reading 3117077069 bytes 2972.7 MB
+c 
+c --- [ options ] ------------------------------------------------------------
+c 
+c   --elimreleff=10                (different from default '1e3')
+c   --seed=5147                    (different from default '0')
+c   --stabilizeonly=true           (different from default 'false')
+c   --subsumereleff=60             (different from default '1e3')
+c 
+c --- [ solving ] ------------------------------------------------------------
+c 
+c time measured in process time since initialization
+c 
+c  seconds     reductions  redundant    irredundant
+c           MB     restarts       trail          variables
+c             level   conflicts       glue             remaining
+c 
+c * 56.66 13852  0 0   0    0    0  0% 0 179132767 340803 100%
+c [ 56.78 13854  0 0   0    0    0  0% 0 179132767 340803 100%
+c - 72.21 14501 348 1   0  301  271 22% 130 178940663 340803 100%
+c I 76.28 14503 331 1   0 1005  939 22% 107 178940663 340803 100%
