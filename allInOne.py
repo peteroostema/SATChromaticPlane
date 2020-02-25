@@ -620,11 +620,18 @@ def displayPlane(vertList, k, assignment, gridWidth, gridHeight, gonNum, edgeLen
             line.draw(win);
    win.flush();
 
+def solveCNF(inputFileName, outputFileName):
+   cadi = Cadical()
+   cnfFile = CNF(from_file=inputFileName);
+   cadi.append_formula(cnfFile.clauses, no_return=False)
+   cadi.solve();
+   return cadi.get_model();
+
 # Switch color's of polygons that are surrendened by different colors that can be changed valiedly
 # Iterate until a fixed point solution is found
-def fixColors(assignment, polygons, indexMap, k, gonNum):
+def fixColors(assignment, inputFileName, polygons, indexMap, k, gonNum):
    cadi = Cadical()
-   cnfFile = CNF(from_file='tile.cnf');
+   cnfFile = CNF(from_file=inputFileName);
    cadi.append_formula(cnfFile.clauses, no_return=False)
    assignment.pop();
    for i in range(10):
@@ -849,10 +856,10 @@ graph = polyToGraphCenReduce(vertList, indexMap, edgeLength, percentWiggle, gonN
 #print("graph")
 printCNF(graph, k, inputFileName);
 
-name = input("Enter to proceed ")
+assignment = solveCNF(inputFileName, outputFileName);
+print(assignment);
 
-assignment = readAssignemnt(outputFileName); #satAssignment.txt
-assignment = fixColors(assignment, vertList, indexMap, k, gonNum);
+#assignment = fixColors(assignment, inputFileName, vertList, indexMap, k, gonNum);
 
 print("assignment");
 print(assignment);
